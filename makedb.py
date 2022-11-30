@@ -37,9 +37,9 @@ table = db['specimens']
 #add indexes
 print('specimens columns:' , table.columns)
 
-print('adding index')
-table.create_index(['Accession', 'Collector', 'FieldNumber', 'CollectionDay', 'CollectionMonth', 'CollectionYear',
-  'FamilyName', 'FullName', 'AcceptedName', 'Country', 'MajorAdmin', 'LocalityNotes'])
+# print('adding index')
+# table.create_index(['Accession', 'Collector', 'FieldNumber', 'CollectionDay', 'CollectionMonth', 'CollectionYear',
+#   'FamilyName', 'FullName', 'AcceptedName', 'Country', 'MajorAdmin', 'LocalityNotes'])
 
 print('all done')
 

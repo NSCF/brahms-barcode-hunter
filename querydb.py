@@ -29,19 +29,19 @@ def querydb(searchparams):
     vals['fieldnumber'] = search
 
   if 'day' in searchparams:
-    searchterms.append('day = :day')
+    searchterms.append('collectionday = :day')
     vals['day'] = searchparams['day']
 
   if 'month' in searchparams:
-    searchterms.append('month = :month')
+    searchterms.append('collectionmonth = :month')
     vals['month'] = searchparams['month']
 
   if 'year' in searchparams:
-    searchterms.append('year = :year')
+    searchterms.append('collectionyear = :year')
     vals['year'] = searchparams['year']
 
   if 'family' in searchparams:
-    searchterms.append('family = :family')
+    searchterms.append('familyname = :family')
     vals['family'] = searchparams['family']
 
   if 'country' in searchparams:
@@ -49,7 +49,7 @@ def querydb(searchparams):
     vals['country'] = searchparams['country']
 
   if 'stateProv' in searchparams:
-    searchterms.append('stateProv = :stateProv')
+    searchterms.append('majoradmin = :stateProv')
     vals['stateProv'] = searchparams['stateProv']
 
   if 'taxonname' in searchparams:
@@ -62,6 +62,7 @@ def querydb(searchparams):
   if len(vals) >= 2: #we need at least two search params
     allterms = ' and '.join(searchterms)
     sql += ' ' + allterms
+    sql += ' limit 10'
 
     qry_results = db.query(sql, vals)
     
@@ -71,3 +72,28 @@ def querydb(searchparams):
     raise Exception('at least two valid search params required')
   
   return results
+
+def get_countries():
+  sql = 'select distinct country from specimens'
+  qry = db.query(sql)
+  results = []
+  for row in qry:
+    results.append(row['Country'])
+  return results
+
+def get_provinces():
+  sql = 'select distinct majoradmin from specimens where country = \'South Africa\''
+  qry = db.query(sql)
+  results = []
+  for row in qry:
+    results.append(row['MajorAdmin'])
+  return results
+
+def get_families():
+  sql = 'select distinct familyname from specimens'
+  qry = db.query(sql)
+  results = []
+  for row in qry:
+    results.append(row['FamilyName'])
+  return results
+
