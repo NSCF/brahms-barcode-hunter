@@ -1,7 +1,7 @@
 from querydb import querydb, get_countries, get_provinces
 
-# res = querydb({'locality': 'pella', 'taxonname': 'just gu'})
-# print('count is:', len(res))
+res = querydb({'accession': '0131081'})
+print('count is:', len(res))
 
-countries = get_provinces()
-i = 1
+# countries = get_provinces()
+# i = 1

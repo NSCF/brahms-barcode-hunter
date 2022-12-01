@@ -93,10 +93,11 @@
         if (res.ok) {
           const rawData = await res.json()
           tableData = rawData.map(x => {
-            const { Barcode, Accession, FieldNumber, Collector, CalcShortCollectionDate, FullName, AcceptedName, Country, MajorAdmin, LocalityNotes } = x
+            const { Barcode, Accession, FieldNumber, FamilyName, Collector, CalcShortCollectionDate, FullName, AcceptedName, Country, MajorAdmin, LocalityNotes } = x
             return {
               barcode: Barcode, 
               accession: Accession, 
+              family: FamilyName,
               name: FullName,
               acceptedname: AcceptedName,
               collector: Collector, 

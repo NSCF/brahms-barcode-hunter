@@ -59,17 +59,13 @@ def querydb(searchparams):
     vals['taxonname'] = search
 
   results = []
-  if len(vals) >= 2: #we need at least two search params
-    allterms = ' and '.join(searchterms)
-    sql += ' ' + allterms
-    sql += ' limit 10'
+  allterms = ' and '.join(searchterms)
+  sql += ' ' + allterms
 
-    qry_results = db.query(sql, vals)
-    
-    for qry_result in qry_results:
-      results.append(qry_result)
-  else:
-    raise Exception('at least two valid search params required')
+  qry_results = db.query(sql, vals)
+  
+  for qry_result in qry_results:
+    results.append(qry_result)
   
   return results
 
