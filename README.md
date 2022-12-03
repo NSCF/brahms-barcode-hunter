@@ -31,7 +31,9 @@ You only have to run all these steps the first time you install the tool.
 
 ### Updating
 To update the tool run the following command in the brahms-barcode-hunter folder:
+
 `git pull`
+
 Then run start the server again. 
 
 ### Database
