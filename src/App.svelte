@@ -133,6 +133,10 @@
 
 </script>
 
+<svelte:head>
+  <title>Barcode Hunter</title>
+</svelte:head>
+
 <main>
   <div class="grid">
     <Grid data={tableData} height="400px"/>

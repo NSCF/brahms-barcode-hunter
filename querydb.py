@@ -1,7 +1,8 @@
 import dataset
-db = dataset.connect('sqlite:///brahms.sqlite')
 
 def querydb(searchparams):
+
+  db = dataset.connect('sqlite:///brahms.sqlite')
 
   # #build the query
   sql = 'select * from specimens where'
@@ -67,29 +68,36 @@ def querydb(searchparams):
   for qry_result in qry_results:
     results.append(qry_result)
   
+  db = None
   return results
 
 def get_countries():
+  db = dataset.connect('sqlite:///brahms.sqlite')
   sql = 'select distinct country from specimens'
   qry = db.query(sql)
   results = []
   for row in qry:
     results.append(row['Country'])
+  db = None
   return results
 
 def get_provinces():
+  db = dataset.connect('sqlite:///brahms.sqlite')
   sql = 'select distinct majoradmin from specimens where country = \'South Africa\''
   qry = db.query(sql)
   results = []
   for row in qry:
     results.append(row['MajorAdmin'])
+  db = None
   return results
 
 def get_families():
+  db = dataset.connect('sqlite:///brahms.sqlite')
   sql = 'select distinct familyname from specimens'
   qry = db.query(sql)
   results = []
   for row in qry:
     results.append(row['FamilyName'])
+  db = None
   return results
 
