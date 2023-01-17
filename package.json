@@ -10,12 +10,14 @@
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^1.1.0",
+    "@zerodevx/svelte-toast": "^0.8.2",
     "svelte": "^3.52.0",
     "svelte-loading-spinners": "^0.3.4",
     "svelte-simple-datatables": "^0.2.3",
     "vite": "^3.2.3"
   },
   "dependencies": {
+    "clipboardy": "^3.0.0",
     "gridjs": "^5.1.0",
     "gridjs-svelte": "^2.1.1",
     "svelte-table": "^0.5.2"

@@ -1,6 +1,8 @@
 <script>
   import {onMount} from 'svelte'
   import Grid from "gridjs-svelte"
+  import { SvelteToast, toast } from '@zerodevx/svelte-toast'
+  import clipboard from 'clipboardy';
   import { Moon } from 'svelte-loading-spinners';
 
   let base_url = '/'
@@ -11,6 +13,10 @@
   let searching = false
 
   let tableData = []
+
+  const toastOptions = {
+    duration: 1000 
+  }
 
   const search = {
     locality: null,
@@ -130,6 +136,13 @@
     tableData = []
   }
 
+  const handleRowClick = (...args) => {
+    const barcode = args[0].detail[1].cells[0].data.trim()
+    clipboard.write(barcode).then(_ => 
+      toast.push('Copied ' + barcode)
+    );
+  }
+
 
 </script>
 
@@ -138,8 +151,9 @@
 </svelte:head>
 
 <main>
+  <SvelteToast options={toastOptions}/>
   <div class="grid">
-    <Grid data={tableData} height="400px"/>
+    <Grid data={tableData} height="400px" on:rowClick={handleRowClick}/>
   </div>
   <div>
     <form>
