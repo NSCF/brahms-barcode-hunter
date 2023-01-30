@@ -1,4 +1,5 @@
-#script read the data from BRAHMS7 files and push to MySQL
+#script read the data from BRAHMS7 files and push to SQLite
+#MAKE SURE YOU'VE ARCHIVED THE PREVIOUS DATABASE BEFORE YOU RUN THIS!!!
 import dataset
 import time
 from progress.bar import Bar
@@ -13,8 +14,10 @@ countestimate = 900000
 #read all the data into sqlite
 start = time.time()
 db = dataset.connect('sqlite:///brahms.sqlite')
-#db['specimens'].drop() #drop previous imports
-table = db['specimens']
+tables = db.tables()
+if 'specimens' in tables:
+  db['specimens'].drop() #drop previous imports
+table = db['specimens'] #recreate
 
 
 bar = Bar('', max = countestimate, suffix='%(percent)d%%')
