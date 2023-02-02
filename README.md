@@ -37,7 +37,7 @@ To update the tool run the following command in the brahms-barcode-hunter folder
 Then run start the server again. 
 
 ### Database
-This utility needs a sqlite file containing the BRAHMS records to search. The records need to be extracted from BRAHMS first and added to a sqlite database file called brahms.sqlite. The fields required from BRAHMS8 are Accession, Barcode, Sheets, Collector, AdditionalCollectors, FieldNumber, CalcShortCollectionDate, CollectionDay, CollectionMonth, CollectionYear, FamilyName, FullName, AcceptedName, Country, MajorAdmin, LocalityNotes
+This utility needs a sqlite file containing the BRAHMS records to search. The records need to be extracted from BRAHMS first and added to a sqlite database file called brahms.sqlite. The fields required from BRAHMS8 are Accession, Barcode, Collector, FieldNumber, CollectionDay, CollectionMonth, CollectionYear, FamilyName, FullName, AcceptedName, Country, MajorAdmin, LocalityNotes
 
 If using BRAHMS7 make sure to rename the extracted fields to be exactly as above before importing into sqlite (they are case sensitive). 
 
