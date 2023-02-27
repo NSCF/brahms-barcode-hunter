@@ -130,6 +130,12 @@
 
   }
 
+  const handleSearchEnter = e => {
+    if(e.keyCode === 13){
+      getRecords()
+    }
+  }
+
   const clearForm = _ => {
     for (const key of Object.keys(search)){
       search[key] = null
@@ -144,6 +150,8 @@
       toast.push('Copied ' + barcode)
     });
   }
+
+  
 
 
 </script>
@@ -162,7 +170,7 @@
     <Grid data={tableData} height="400px" on:rowClick={handleRowClick}/>
   </div>
   <div>
-    <form>
+    <form on:keypress={handleSearchEnter}>
       <div>
         <label>family
           <select bind:value={search.family}>
