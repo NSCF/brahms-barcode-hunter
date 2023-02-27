@@ -11,6 +11,7 @@
   }
 
   let searching = false
+  let copiedCount = 0
 
   let tableData = []
 
@@ -138,9 +139,10 @@
 
   const handleRowClick = (...args) => {
     const barcode = args[0].detail[1].cells[0].data.trim()
-    clipboard.write(barcode).then(_ => 
+    clipboard.write(barcode).then(_ => { 
+      copiedCount++
       toast.push('Copied ' + barcode)
-    );
+    });
   }
 
 
@@ -152,6 +154,10 @@
 
 <main>
   <SvelteToast options={toastOptions}/>
+  <div class="counter">
+    <span>Barcodes copied: {copiedCount}</span>
+
+  </div>
   <div class="grid">
     <Grid data={tableData} height="400px" on:rowClick={handleRowClick}/>
   </div>
@@ -248,6 +254,15 @@
 <style>
 
   @import "https://cdn.jsdelivr.net/npm/gridjs/dist/theme/mermaid.min.css";
+
+  .counter {
+    position: fixed;
+    left:10px;
+    top: 10px;
+    background-color: aliceblue;
+    border-radius: 4px;
+    padding: 4px;
+  }
 
   .grid {
     max-height: 500px;
