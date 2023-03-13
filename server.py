@@ -22,7 +22,6 @@ def search():
         return make_response(str(e), 400)
     else:
       return make_response('query paramters are required', 400)
-
   else:
     return make_response('invalid call method', 400)
 
