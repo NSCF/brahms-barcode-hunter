@@ -164,7 +164,6 @@
   <SvelteToast options={toastOptions}/>
   <div class="counter">
     <span>Barcodes copied: {copiedCount}</span>
-
   </div>
   <div class="grid">
     <Grid data={tableData} height="400px" on:rowClick={handleRowClick}/>
