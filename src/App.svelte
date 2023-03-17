@@ -5,7 +5,7 @@
   import clipboard from 'clipboardy';
   import { Moon } from 'svelte-loading-spinners';
 
-  let base_url = '/'
+  let base_url = '/' 
   if(import.meta.env.DEV) {
     base_url = 'http://localhost:5000/'
   }
@@ -151,8 +151,6 @@
     });
   }
 
-  
-
 
 </script>
 
@@ -171,21 +169,10 @@
   <div>
     <form on:keypress={handleSearchEnter}>
       <div>
-        <label>family
-          <select bind:value={search.family}>
-            <option value=''></option>
-            {#each families as family }
-              <option value={family}>{family}</option>
-            {/each}
-          </select>
+        <label>accession no.
+          <input bind:value={search.accession}/>
         </label>
       </div>
-      <div >
-        <label >taxon name
-          <input bind:value={search.taxonname}/>
-        </label>
-      </div>
-      <div/>
       <div>
         <label>collector
           <input bind:value={search.collector}/>
@@ -194,11 +181,6 @@
       <div>
         <label>collector no.
           <input bind:value={search.fieldnumber}/>
-        </label>
-      </div>
-      <div>
-        <label>accession no.
-          <input bind:value={search.accession}/>
         </label>
       </div>
       <div>
@@ -239,6 +221,22 @@
       <div>
         <label>locality
           <input bind:value={search.locality}/>
+        </label>
+      </div>
+      <div/>
+      <div>
+        <label>family
+          <select bind:value={search.family}>
+            <option value=''></option>
+            {#each families as family }
+              <option value={family}>{family}</option>
+            {/each}
+          </select>
+        </label>
+      </div>
+      <div >
+        <label >taxon name
+          <input bind:value={search.taxonname}/>
         </label>
       </div>
     </form>

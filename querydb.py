@@ -7,7 +7,6 @@ def querydb(searchparams):
   # #build the query
   sql = 'select * from specimens where'
   vals = {}
-
   searchterms = []
 
   if 'locality' in searchparams:
@@ -68,16 +67,18 @@ def querydb(searchparams):
   for qry_result in qry_results:
     results.append(qry_result)
   
+  db.close()
   db = None
   return results
 
 def get_countries():
   db = dataset.connect('sqlite:///brahms.sqlite')
   sql = 'select distinct country from specimens'
-  qry = db.query(sql)
+  qryResults = db.query(sql)
   results = []
-  for row in qry:
+  for row in qryResults:
     results.append(row['Country'])
+  db.close()
   db = None
   return results
 
@@ -88,6 +89,7 @@ def get_provinces():
   results = []
   for row in qry:
     results.append(row['MajorAdmin'])
+  db.close()
   db = None
   return results
 
@@ -98,6 +100,7 @@ def get_families():
   results = []
   for row in qry:
     results.append(row['FamilyName'])
+  db.close()
   db = None
   return results
 
