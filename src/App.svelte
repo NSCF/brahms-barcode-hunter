@@ -151,6 +151,14 @@
     });
   }
 
+  const handleFormCopy = ev => {
+    const selection = document.getSelection();
+    if (selection.toString().length) {
+      toast.push('Copied ' + selection)
+      copiedCount++
+    }
+  }
+
 
 </script>
 
@@ -161,13 +169,13 @@
 <main>
   <SvelteToast options={toastOptions}/>
   <div class="counter">
-    <span>Barcodes copied: {copiedCount}</span>
+    <span>Items copied: {copiedCount}</span>
   </div>
   <div class="grid">
     <Grid data={tableData} height="400px" on:rowClick={handleRowClick}/>
   </div>
   <div>
-    <form on:keypress={handleSearchEnter}>
+    <form on:keypress={handleSearchEnter} on:copy={handleFormCopy}>
       <div>
         <label>accession no.
           <input bind:value={search.accession}/>
