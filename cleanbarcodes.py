@@ -8,7 +8,7 @@ counter = 0
 for row in table:
   barcode = row['Barcode']
   if '-' in barcode:
-    barcode = barcode.split(' ')[0]
+    barcode = barcode.split('-')[0]
     row['Barcode'] = barcode
     table.update(row, [id])
     counter = counter + 1
