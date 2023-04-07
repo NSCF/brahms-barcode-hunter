@@ -7,10 +7,10 @@ print('fixing barcodes...')
 counter = 0
 for row in table:
   barcode = row['Barcode']
-  if '-' in barcode:
+  if '0' in barcode:
     barcode = barcode.split('-')[0]
-    row['Barcode'] = barcode
-    table.update(row, [id])
+    new_data = dict(id = row['id'], Barcode = barcode)
+    table.update(new_data, ['id'])
     counter = counter + 1
 
 db.close()
