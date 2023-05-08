@@ -33,6 +33,18 @@
     taxonname: null
   }
 
+  const tableColWidths = [
+    {width: '20%'},
+    {width: '10%'},
+    {width: '10%'},
+    {width: '10%'},
+    {width: '10%'},
+    {width: '10%'},
+    {width: '10%'},
+    {width: '10%'},
+    {width: '10%'}
+  ]
+
   let countries = []
   let provinces = []
   let families = []
