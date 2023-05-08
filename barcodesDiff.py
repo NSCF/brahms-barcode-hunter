@@ -36,7 +36,8 @@ db.close()
 
 if len(new_barcodes) > 0:
 
-  print(len(new_barcodes), 'are not in the database. Writing to file...')
+  percent = round((len(new_barcodes) / len(barcodes)) * 100, 1)
+  print(f"{len(new_barcodes)} ({percent}%) are not in the database. Writing to file...")
 
   new_barcodes.sort()
 
