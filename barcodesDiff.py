@@ -5,11 +5,11 @@ import dataset
 from progress.bar import Bar
 
 #csv file with a field called 'barcode'
-csvPath = r'F:\Herbarium imaging\PRU\processing'
-csvFileName = r'20230508 - barcodes.csv'
+csvPath = r'F:\Herbarium imaging\PRU\final\Cycads'
+csvFileName = r'allbarcodes.csv'
 
 barcodes = set() #we need the unique values
-with open(path.join(csvPath, csvFileName), newline='') as csvfile:
+with open(path.join(csvPath, csvFileName), newline='', errors='ignore') as csvfile:
   reader = csv.DictReader(csvfile)
   for row in reader:
     barcodes.add(row['barcode'])
@@ -41,7 +41,7 @@ if len(new_barcodes) > 0:
 
   new_barcodes.sort()
 
-  with open('not_captured.csv', 'w', newline='') as csvfile:
+  with open(path.join(csvPath, 'barcodes_not_captured.csv'), 'w', newline='') as csvfile:
     fieldnames = ['barcode']
     writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
