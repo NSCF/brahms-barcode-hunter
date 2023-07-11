@@ -1,17 +1,39 @@
 <script>
-  import {onMount} from 'svelte'
+  import { onMount } from 'svelte'
   import Grid from "gridjs-svelte"
   import { SvelteToast, toast } from '@zerodevx/svelte-toast'
   import clipboard from 'clipboardy';
   import { Moon } from 'svelte-loading-spinners';
+  import { io } from "socket.io-client";
 
   let base_url = '/' 
   if(import.meta.env.DEV) {
     base_url = 'http://localhost:5000/'
   }
 
+  //check this might have to be set for the different domains
+  const socket = io(base_url);
+
+  socket.on("connect", () => {
+    console.log('socket connection established with ID', socket.id);
+  });
+
+
   let searching = false
-  let copiedCount = 0
+  
+  const printIDs = new Set()
+  let printCount = 0
+
+  socket.on('increment', data => {
+    for (const printID of data.job_ids) {
+      printIDs.add(printID)
+    }
+    printCount = printIDs.size
+  })
+
+  socket.on('polo', _ => {
+    console.log('got message polo')
+  })
 
   let tableData = []
 
@@ -158,7 +180,7 @@
   const handleRowClick = (...args) => {
     const barcode = args[0].detail[1].cells[0].data.trim()
     clipboard.write(barcode).then(_ => { 
-      copiedCount++
+      printCount++
       toast.push('Copied ' + barcode)
     });
   }
@@ -167,8 +189,12 @@
     const selection = document.getSelection();
     if (selection.toString().length) {
       toast.push('Copied ' + selection)
-      copiedCount++
+      printCount++
     }
+  }
+
+  const emitMessage = ev => {
+    socket.emit('marco')
   }
 
 
@@ -181,7 +207,7 @@
 <main>
   <SvelteToast options={toastOptions}/>
   <div class="counter">
-    <span>Items copied: {copiedCount}</span>
+    <span>Items copied: {printCount}</span>
   </div>
   <div class="grid">
     <Grid data={tableData} height="400px" on:rowClick={handleRowClick}/>

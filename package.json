@@ -20,6 +20,7 @@
     "clipboardy": "^3.0.0",
     "gridjs": "^5.1.0",
     "gridjs-svelte": "^2.1.1",
+    "socket.io-client": "^4.7.1",
     "svelte-table": "^0.5.2"
   }
 }
