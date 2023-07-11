@@ -1,4 +1,4 @@
-#script read the data from BRAHMS7 files and push to SQLite
+#script to read the data from BRAHMS7 files and push to SQLite
 #MAKE SURE YOU'VE ARCHIVED THE PREVIOUS DATABASE BEFORE YOU RUN THIS!!!
 import dataset
 import time
