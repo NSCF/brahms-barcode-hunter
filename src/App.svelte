@@ -180,7 +180,6 @@
   const handleRowClick = (...args) => {
     const barcode = args[0].detail[1].cells[0].data.trim()
     clipboard.write(barcode).then(_ => { 
-      printCount++
       toast.push('Copied ' + barcode)
     });
   }
@@ -189,7 +188,6 @@
     const selection = document.getSelection();
     if (selection.toString().length) {
       toast.push('Copied ' + selection)
-      printCount++
     }
   }
 
