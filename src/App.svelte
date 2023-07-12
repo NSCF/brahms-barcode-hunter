@@ -5,6 +5,7 @@
   import clipboard from 'clipboardy';
   import { Moon } from 'svelte-loading-spinners';
   import { io } from "socket.io-client";
+  import onlyUnique from './lib/onlyUnique';
 
   let base_url = '/' 
   if(import.meta.env.DEV) {
@@ -25,10 +26,17 @@
   let printCount = 0
 
   socket.on('increment', data => {
-    for (const printID of data.job_ids) {
-      printIDs.add(printID)
+    const uniques = data.job_ids.filter(onlyUnique)
+    for (const printID of uniques) {
+      if (!printIDs.has(printID)){
+        printIDs.add(printID)
+        printCount++
+      }
     }
-    printCount = printIDs.size
+
+    //save to localStorage
+    const today = new Date().toJSON().slice(0, 10).replace(/-/g,'')
+    localStorage.setItem(today, printCount.toString())
   })
 
   socket.on('polo', _ => {
@@ -72,6 +80,16 @@
   let families = []
 
   onMount(_ => {
+
+    //get the count from localstorage
+    const today = new Date().toJSON().slice(0, 10).replace(/-/g,'')
+    const count = localStorage.getItem(today)
+    if (count) {
+      printCount = Number(count)
+    }
+    localStorage.clear()// so we don't accumulate over time
+    localStorage.setItem(today, printCount.toString())//and store it again
+
     fetch(base_url + 'countries').then(res => {
       if (res.ok){
         res.json().then(data => countries = data.filter(x=>x).sort())

@@ -55,7 +55,7 @@ def my_event(message):
   emit('my response', {'data': 'got it!'})
 
 def watchPrinter():
-  t = threading.Timer(0.5, watchPrinter)
+  t = threading.Timer(0.2, watchPrinter)
   t.daemon = True
   t.start()
   info = wait_for_print_job_info(timeout=0.25)
