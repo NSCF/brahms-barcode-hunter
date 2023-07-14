@@ -19,10 +19,14 @@
     console.log('socket connection established with ID', socket.id);
   });
 
-  socket.on('disconnect', _ => {
+  socket.on('disconnect', reason => {
+    console.error('socket disconnected with reason:', reason)
     toast.push('Counter disconnected', {target: 'disconnected'})
   })
 
+  socket.io.on('reconnect', _ => {
+    toast.pop({ target: 'disconnected' })
+  })
 
   let searching = false
   
