@@ -19,6 +19,10 @@
     console.log('socket connection established with ID', socket.id);
   });
 
+  socket.on('disconnect', _ => {
+    toast.push('Counter disconnected', {target: 'disconnected'})
+  })
+
 
   let searching = false
   
@@ -39,9 +43,6 @@
     localStorage.setItem(today, printCount.toString())
   })
 
-  socket.on('polo', _ => {
-    console.log('got message polo')
-  })
 
   let tableData = []
 
@@ -209,10 +210,6 @@
     }
   }
 
-  const emitMessage = ev => {
-    socket.emit('marco')
-  }
-
 
 </script>
 
@@ -223,7 +220,7 @@
 <main>
   <SvelteToast options={toastOptions}/>
   <div class="counter">
-    <span>Items copied: {printCount}</span>
+    <span>Print count: {printCount}</span>
   </div>
   <div class="grid">
     <Grid data={tableData} height="400px" on:rowClick={handleRowClick}/>
@@ -316,11 +313,21 @@
     <br/>
     <button class="clearbutton" on:click={clearForm} disabled={searching}>clear</button>
   </div>
+  <div class="bottom-toast">
+    <SvelteToast target="disconnected" options={{initial: 0, reversed: true,  intro: { y: 192 }}}/>
+  </div>
 </main>
 
 <style>
 
   @import "https://cdn.jsdelivr.net/npm/gridjs/dist/theme/mermaid.min.css";
+
+  .bottom-toast {
+    --toastContainerTop: auto;
+    --toastContainerRight: auto;
+    --toastContainerBottom: 4rem;
+    --toastContainerLeft: 4rem;
+  }
 
   .counter {
     position: fixed;
@@ -372,5 +379,7 @@
   .clearbutton {
     background-color: lightgray;
   }
+
+
 
 </style>

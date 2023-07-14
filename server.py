@@ -46,10 +46,6 @@ def families():
 def handle_connect():
   user_session_id = request.sid
 
-@socketio.on('marco')
-def handle_marco():
-  emit('polo')
-
 @socketio.event
 def my_event(message):
   emit('my response', {'data': 'got it!'})
