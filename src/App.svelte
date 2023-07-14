@@ -16,16 +16,17 @@
   const socket = io(base_url);
 
   socket.on("connect", () => {
-    console.log('socket connection established with ID', socket.id);
+    console.log(`socket connection established with ID ${socket.id}`);
   });
 
   socket.on('disconnect', reason => {
-    console.error('socket disconnected with reason:', reason)
+    console.error(`socket disconnected with reason: ${reason}`)
     toast.push('Counter disconnected', {target: 'disconnected'})
   })
 
   socket.io.on('reconnect', _ => {
-    toast.pop({ target: 'disconnected' })
+    console.log('reconnected')
+    toast.pop({target: 'disconnected'})
   })
 
   let searching = false

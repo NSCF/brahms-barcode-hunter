@@ -46,22 +46,18 @@ def families():
 def handle_connect():
   user_session_id = request.sid
 
-@socketio.event
-def my_event(message):
-  emit('my response', {'data': 'got it!'})
-
 def watchPrinter():
   t = threading.Timer(0.2, watchPrinter)
   t.daemon = True
   t.start()
-  info = wait_for_print_job_info(timeout=0.25)
+  info = wait_for_print_job_info(timeout=0.1)
   if info:
     job_ids = []
-    
     for nd in info:
       job_id, key, value = nd
       job_ids.append(job_id)
     
+    print('sending increment message to', user_session_id)
     socketio.emit('increment', {"job_ids": job_ids}, to=user_session_id)
 
 watchPrinter()
