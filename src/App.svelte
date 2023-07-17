@@ -34,14 +34,8 @@
   const printIDs = new Set()
   let printCount = 0
 
-  socket.on('increment', data => {
-    const uniques = data.job_ids.filter(onlyUnique)
-    for (const printID of uniques) {
-      if (!printIDs.has(printID)){
-        printIDs.add(printID)
-        printCount++
-      }
-    }
+  socket.on('increment', _ => {
+    printCount++
 
     //save to localStorage
     const today = new Date().toJSON().slice(0, 10).replace(/-/g,'')
