@@ -6,8 +6,9 @@ from progress.bar import Bar
 from os import path
 import csv
 
-datafile = r'PRU-BRAHMS-Extract-20230130-OpenRefine-OpenRefine.csv'
-countestimate = 60000
+datafilepath = r'C:\Users\Ian Engelbrecht\Downloads'
+datafile = r'Skukuza-BRAHMS-specimens-OpenRefine.csv'
+countestimate = 16000
 
 #SCRIPT
 
@@ -22,7 +23,7 @@ db = dataset.connect('sqlite:///brahms.sqlite')
 table = db['specimens'] #recreate
 
 bar = Bar('', max = countestimate, suffix='%(percent)d%%')
-with open(datafile, newline='', encoding='utf8') as csvfile:
+with open(path.join(datafilepath, datafile), newline='', encoding='utf8') as csvfile:
   reader = csv.DictReader(csvfile)
   for row in reader:
     table.insert(row)

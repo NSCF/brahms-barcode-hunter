@@ -24,7 +24,7 @@ def querydb(searchparams):
     vals['accession'] = searchparams['accession']
 
   if 'fieldnumber' in searchparams:
-    searchterms.append('fieldnumber like :fieldnumber')
+    searchterms.append('fieldnumber = :fieldnumber')
     search = '%' + searchparams['fieldnumber'] + '%'
     vals['fieldnumber'] = search
 

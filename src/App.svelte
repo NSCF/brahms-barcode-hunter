@@ -31,7 +31,6 @@
 
   let searching = false
   
-  const printIDs = new Set()
   let printCount = 0
 
   socket.on('increment', _ => {
