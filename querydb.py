@@ -24,8 +24,8 @@ def querydb(searchparams):
     vals['accession'] = searchparams['accession']
 
   if 'fieldnumber' in searchparams:
-    searchterms.append('fieldnumber = :fieldnumber')
-    search = '%' + searchparams['fieldnumber'] + '%'
+    searchterms.append('fieldnumber REGEXP \'' + f'\\b{searchparams["fieldnumber"]}\\b' + '\'') #match whole numbers in string
+    search = '%' + searchparams['fieldnumber']
     vals['fieldnumber'] = search
 
   if 'day' in searchparams:
@@ -62,6 +62,7 @@ def querydb(searchparams):
   allterms = ' and '.join(searchterms)
   sql += ' ' + allterms
 
+  print(sql)
   qry_results = db.query(sql, vals)
   
   for qry_result in qry_results:
