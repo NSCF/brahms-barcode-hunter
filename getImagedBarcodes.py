@@ -7,6 +7,7 @@ from __future__ import print_function
 import os.path
 import re
 import csv
+import time
 
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
@@ -61,19 +62,22 @@ def main():
     recordCounter = { 'count': 0 }
     barcodeSheetsIndex = {}
     zeros = []
-    errors = []
+    errors = {}
     for folder in folders['files']:
       processFolder(drive, sheetService, folder['name'], folder['id'], barcodesSet, recordCounter, barcodeSheetsIndex, zeros, errors)
 
-    print('all folders and sheets processed')
 
     if len(zeros) > 0:
       print('the following files have no unique barcodes:')
       print('; '.join(zeros))
 
     if len(errors) > 0:
-      print('there were errors reading the following files:')
-      print('; '.join(errors))
+      print('there were the following errors reading files:')
+      for key, value in errors.items():
+        print(key + ': ' + str(value))
+    else:
+      print('all folders and sheets successfully processed')
+
 
     print(len(barcodesSet), 'unique barcodes were found, saving to file...')
     barcodesSet = list(barcodesSet)
@@ -104,12 +108,18 @@ def processFolder(drive, sheetService, folderPath, folderID, barcodesList, recor
   sheetMymeType = "application/vnd.google-apps.spreadsheet"
  
   #first get all the contents of the folder
-  result = drive.files().list(q=f"parents in '{folderID}'", fields='files(id, name, mimeType)').execute()
+  try:
+    result = drive.files().list(q=f"parents in '{folderID}'", fields='files(id, name, mimeType)').execute()
+  except Exception as ex:
+    errors[folderPath] = ex
+    return
+
   for item in result['files']:
     if item['mimeType'] == folderMimeType:
-      folderPath += '/' + item['name']
-      processFolder(drive, sheetService, folderPath, item['id'], barcodesList, recordCounter, barcodeSheetsIndex, zeros, errors)
+      newFolderPath = folderPath + '/' + item['name']
+      processFolder(drive, sheetService, newFolderPath, item['id'], barcodesList, recordCounter, barcodeSheetsIndex, zeros, errors)
     elif item['mimeType'] == sheetMymeType and re.match('[0-9]{8}', item['name']): #we only read spreadsheets here that conform to the naming standard
+      time.sleep(1) #we can't overload the sheets api
       processSheet(sheetService, item['id'], item['name'], folderPath, barcodesList, recordCounter, barcodeSheetsIndex, zeros, errors)
     
   return
@@ -121,7 +131,7 @@ def processSheet(sheetService, sheetID, sheetName, folderPath, barcodesList, rec
     result = sheetService.values().get(spreadsheetId=sheetID, range=RANGE).execute()
   except Exception as ex:
     print('could not read', folderPath + '/' + sheetName)
-    errors.append(folderPath + '/' + sheetName)
+    errors[folderPath + '/' + sheetName] = ex
     return
   
   rows = result.get('values', [])
