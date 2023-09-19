@@ -15,19 +15,17 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
+DRIVE_FOLDER_ID = '1o3MmDQcb1IC5VUKPORo2yEdxL_8-a-89'
+
 # If modifying these scopes, delete the file token.json.
 SCOPES = [
   'https://www.googleapis.com/auth/spreadsheets.readonly',
   'https://www.googleapis.com/auth/drive.metadata.readonly'
 ]
 
-# The ID and range of a sample spreadsheet.
-DRIVE_FOLDER_ID = '1o3MmDQcb1IC5VUKPORo2yEdxL_8-a-89'
-
-
-
 def main():
 
+  print('authenticating...')
   #authenticate
   creds = None
   # The file token.json stores the user's access and refresh tokens, and is
@@ -65,7 +63,6 @@ def main():
     errors = {}
     for folder in folders['files']:
       processFolder(drive, sheetService, folder['name'], folder['id'], barcodesSet, recordCounter, barcodeSheetsIndex, zeros, errors)
-
 
     if len(zeros) > 0:
       print('the following files have no unique barcodes:')
