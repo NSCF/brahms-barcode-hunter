@@ -1,5 +1,7 @@
 *.sqlite*
 *.csv
+credentials.json
+token.json
 
 # Logs
 logs

@@ -5,7 +5,6 @@
   import clipboard from 'clipboardy';
   import { Moon } from 'svelte-loading-spinners';
   import { io } from "socket.io-client";
-  import onlyUnique from './lib/onlyUnique';
 
   let base_url = '/' 
   if(import.meta.env.DEV) {
@@ -34,11 +33,17 @@
   let printCount = 0
 
   socket.on('increment', _ => {
-    printCount++
 
-    //save to localStorage
-    const today = new Date().toJSON().slice(0, 10).replace(/-/g,'')
-    localStorage.setItem(today, printCount.toString())
+    const today = new Date().toISOString().split('T')[0].replace(/-/g,'')
+    let currentCount = localStorage.getItem(today)
+    if(currentCount) {
+      printCount = Number(currentCount) + 1
+      localStorage.setItem(today, printCount.toString())
+    }
+    else {
+      printCount = 1
+      localStorage.setItem(today, '1')
+    }
   })
 
 
