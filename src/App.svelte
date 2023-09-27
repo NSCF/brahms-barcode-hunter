@@ -221,7 +221,7 @@
     <span>Print count: {printCount}</span>
   </div>
   <div class="grid">
-    <Grid data={tableData} height="400px" on:rowClick={handleRowClick}/>
+    <Grid data={tableData} height="400px" className={{table: "table-border"}} on:rowClick={handleRowClick}/>
   </div>
   <div>
     <form on:keypress={handleSearchEnter} on:copy={handleFormCopy}>
@@ -325,6 +325,10 @@
     --toastContainerRight: auto;
     --toastContainerBottom: 4rem;
     --toastContainerLeft: 4rem;
+  }
+
+  .table-border {
+    border: '3px solid #ccc';
   }
 
   .counter {
