@@ -91,8 +91,6 @@
     if (count) {
       printCount = Number(count)
     }
-    localStorage.clear()// so we don't accumulate over time
-    localStorage.setItem(today, printCount.toString())//and store it again
 
     fetch(base_url + 'countries').then(res => {
       if (res.ok){
