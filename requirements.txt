@@ -1,6 +1,7 @@
 SQLAlchemy==1.4.47
 dataset==1.5.2
-Flask==2.2.2
+Flask==3.0.1
 Flask-Cors==3.0.10
 progress==1.6
 Flask-SocketIO==5.3.4
+requests==2.31.0

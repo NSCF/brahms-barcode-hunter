@@ -17,10 +17,13 @@
     "vite": "^3.2.3"
   },
   "dependencies": {
+    "@urql/svelte": "^4.0.4",
     "clipboardy": "^3.0.0",
+    "graphql": "^16.8.1",
     "gridjs": "^5.1.0",
     "gridjs-svelte": "^2.1.1",
     "socket.io-client": "^4.7.1",
+    "svelte-spa-router": "^4.0.1",
     "svelte-table": "^0.5.2"
   }
 }
