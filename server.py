@@ -117,4 +117,4 @@ thread.start()
 
 if __name__ == '__main__':
   threading.Timer(1.25, lambda: webbrowser.open('http://127.0.0.1:5000') ).start()
-  socketio.run(app, port=5000, debug=True)
+  socketio.run(app, port=5000, debug=False)
