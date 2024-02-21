@@ -3,7 +3,7 @@ from flask import Flask, request, current_app, make_response, render_template, j
 from flask_cors import CORS
 from flask_socketio import SocketIO
 from printerInterface import wait_for_print_job
-from querydb import querydb, get_countries, get_provinces, get_families
+from querydb import querydb, get_countries, get_provinces, get_families, get_WFO_names, get_BODATSA_names
 
 app = Flask(__name__, static_url_path='', static_folder='dist')
 CORS(app)
@@ -56,40 +56,32 @@ def families():
 # getting the 
 @app.route('/namesearch', methods=["GET"])
 def name_search():
-    params = request.args.keys()
-    if 'search_string' in params:
-      search_string = request.args['search_string']
-      if search_string and search_string.strip():
-        search_string = re.sub('\s+', '* ', search_string)
+    
+    if 'source' not in request.args:
+      return ('source is required', 400)
+    
+    if request.args['source'] not in ['WFO', 'SANBI']:
+      return('source must be one of WFO or SANBI')
+    
+    if 'search_string' not in request.args:
+      return ('no search string parameter', 400)
+    
+    if not request.args['search_string'] or not request.args['search_string'].strip():
+      return ('no search string provided', 400)
+    
+    source = request.args['source']   
+    search_string = request.args['search_string']
 
-        url = 'https://list.worldfloraonline.org/gql.php'
-        headers = {
-          'Content-Type': 'application/json',
-        }
-
-        query = '''
-          query GetTaxa($searchString: String!) {
-              taxonNameSuggestion(termsString: $searchString) {
-                id,
-                fullNameStringPlain,
-                role
-            }
-          }
-        '''
-
-        data = {'query': query, 'variables': {'searchString': search_string}}
-        response = requests.post(url, json=data, headers=headers)
-        if response.status_code == 200:
-            results = response.json()
-            return results
-        else:
-            return (response.text, response.status_code)
-      else:
-        return ('no search string provided', 400)
-    else:
-        return ('no search string parameter', 400)
-
-
+    if source == 'WFO':
+      try:
+        results = get_WFO_names(search_string)
+        return results
+      except Exception as ex:
+        return(str(ex), 500)
+      
+    if source == 'SANBI':
+      results = get_BODATSA_names(search_string)
+      return results
 
 @socketio.on('connect')
 def handle_connect():

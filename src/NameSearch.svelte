@@ -7,7 +7,9 @@
     base_url = 'http://localhost:5000/'
   }
 
+  let searchInput
   let searchText = ''
+  let source
   let names = []
   let fetching = false
 
@@ -23,11 +25,11 @@
     if (searchText && searchText.trim() && searchText.trim().split(' ').length > 1) {
       names = []
       fetching = true
-      const response = await fetch(base_url + `namesearch?search_string=${searchText}`)
+      const response = await fetch(base_url + `namesearch?search_string=${searchText}&source=${source}`)
       if (response.ok){
-        const json = await response.json()
+        names = await response.json()
+        console.log(names[0])
         fetching = false
-        names = json.data.taxonNameSuggestion
       }
       else {
         console.error(response.message)
@@ -46,12 +48,24 @@
   }
 
   const copyName = name => {
-    let copyString = Object.values(name).join('\t')
+    let values = [
+      name.fullName,
+      name.source,
+      name.identifier,
+      name.status,
+      name.acceptedName
+    ]
+    let copyString = values.join('\t').trim()
     clipboard.write(copyString).then(_ => { 
       toast.push('Name copied')
     });
   }
 
+  const clear = _ => {
+    source = "SANBI"
+    searchText = ''
+    searchInput.value = ''
+  }
 
 </script>
 
@@ -64,9 +78,15 @@
 <main>
   <h2>Taxon name search</h2>
   <div class="search">
-    <div>
-
-      <input placeholder="Add partial taxon names here, e.g. 'wel mir', and press enter.. " on:input={debounce}/>
+    <div class="fields">
+      <select bind:value={source} on:change={getNames}>
+        <option value="SANBI">SANBI</option>
+        <option value="WFO">WFO</option>
+      </select>
+      <input placeholder="Add partial taxon names here, e.g. 'wel mir', and press enter.. " on:input={debounce} bind:this={searchInput}/>
+      <span class="material-symbols-outlined refresh" on:click={clear}>
+        refresh
+        </span>
       <div>
         {#if fetching}
           <p>Fetching names...</p>
@@ -76,7 +96,7 @@
             <span class="material-symbols-outlined" style="color: gray;" on:click={copyName(name)}>
               content_copy
             </span>
-            {name.fullNameStringPlain}</div>
+            {name.fullName}</div>
           {/each}
         {/if}
       </div>
@@ -102,16 +122,34 @@
     justify-content: center;
   }
 
+  .fields {
+    position: relative;
+  }
+
+  .refresh {
+    position: absolute;
+    top: 7px;
+    right: 5px;
+    color: gray; 
+    transform: scaleX(-1);
+  }
+
   input {
-    
-    width: 800px;
+    width: 400px;
+  }
+  
+  select {
+    width: 150px;
+  }
+
+  input, select {   
     padding: 10px;
     border: lightgray solid 1px;
     border-radius: 5px;
     margin-bottom: 1em;
   }
 
-  input:focus {
+  input:focus, select:focus {
     outline: rgb(105, 177, 105) solid 3px;
   }
 

@@ -1,4 +1,5 @@
-import dataset
+import re
+import dataset, requests
 
 def querydb(searchparams):
 
@@ -104,4 +105,76 @@ def get_families():
   db.close()
   db = None
   return results
+
+def get_WFO_names(search_string):
+  if search_string and search_string.strip():
+
+    search_string = re.sub(r'\s+', '* ', search_string)
+
+    url = 'https://list.worldfloraonline.org/gql.php'
+    headers = {
+      'Content-Type': 'application/json',
+    }
+
+    query = '''
+      query GetTaxa($searchString: String!) {
+        taxonNameSuggestion(termsString: $searchString) {
+          fullNameStringPlain,
+          id,
+          role,
+          currentPreferredUsage {
+            hasName {
+              fullNameStringPlain,
+              authorsString
+            }
+          }
+        }
+      }
+    '''
+
+    data = {'query': query, 'variables': {'searchString': search_string}}
+    response = requests.post(url, json=data, headers=headers)
+    if response.status_code == 200:
+        results = response.json()
+        data = results["data"]["taxonNameSuggestion"]
+        #we need to add the source
+        all_mapped = []
+        for record in data:
+          mapped = {
+            "fullName": record["fullNameStringPlain"],
+            "source" : "WFO",
+            "identifier": record["id"],
+            "status": record["role"],
+            "acceptedName": None
+          }
+
+          accepted_name = record["currentPreferredUsage"]["hasName"]["fullNameStringPlain"]
+          if mapped["fullName"] != accepted_name:
+            mapped["acceptedName"] = accepted_name
+
+          all_mapped.append(mapped)
+        return all_mapped
+    else:
+        return (response.text, response.status_code)
+  else:
+    raise Exception('search string is required')
+  
+def get_BODATSA_names(search_string):
+  db = dataset.connect('sqlite:///brahms.sqlite')
+
+  search_string = re.sub(r'\s+', '% ', search_string + ' ').strip() # adding the space on the end so we get the extra %
+  sql = "select * from taxa where fullname like :search"
+  query_results = []
+  for row in db.query(sql, search = search_string):
+    mapped = {
+      "fullName": row["fullname"],
+      "source" : "SANBI",
+      "identifier": row["guid"],
+      "status": row["status"],
+      "acceptedName": row['acceptedname'] # this is already empty if the same as fullname
+    }
+    query_results.append(mapped)
+  return query_results
+  
+
 

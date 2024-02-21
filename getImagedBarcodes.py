@@ -1,6 +1,7 @@
-#get the list of barcodes from the imaging spreadsheets
+# get the list of barcodes from the imaging spreadsheets
 # note that only spreadsheets that conform to the naming standard are read (ie date string)
 # also note that the code for getting unique barcodes needs to be edited per herbarium
+#if this throws an error try deleting token.json and then run again to reauthenticate
 
 from __future__ import print_function
 
@@ -15,7 +16,7 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
-DRIVE_FOLDER_ID = '1o3MmDQcb1IC5VUKPORo2yEdxL_8-a-89'
+DRIVE_FOLDER_ID = '1fFrdeM8PiRR-hY2g9PiOiIkUIWkp_0hp' # Moss
 
 # If modifying these scopes, delete the file token.json.
 SCOPES = [
@@ -36,7 +37,12 @@ def main():
   # If there are no (valid) credentials available, let the user log in.
   if not creds or not creds.valid:
     if creds and creds.expired and creds.refresh_token:
-      creds.refresh(Request())
+      try:
+        creds.refresh(Request())
+      except Exception as ex:
+        print('Error authenticating:', str(ex))
+        print('Delete the token.json file and try again...')
+        exit()
     else:
       flow = InstalledAppFlow.from_client_secrets_file(
         'credentials.json', SCOPES)
