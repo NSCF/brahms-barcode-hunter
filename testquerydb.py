@@ -6,5 +6,5 @@ from querydb import querydb, get_countries, get_provinces, get_BODATSA_names, ge
 # countries = get_provinces()
 # i = 1
 
-names = get_WFO_names("con juc")
+names = get_WFO_names("care vulp")
 i = 1

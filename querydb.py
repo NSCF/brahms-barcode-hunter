@@ -148,9 +148,10 @@ def get_WFO_names(search_string):
             "acceptedName": None
           }
 
-          accepted_name = record["currentPreferredUsage"]["hasName"]["fullNameStringPlain"]
-          if mapped["fullName"] != accepted_name:
-            mapped["acceptedName"] = accepted_name
+          if record["currentPreferredUsage"] and record["currentPreferredUsage"]["hasName"] and record["currentPreferredUsage"]["hasName"]["fullNameStringPlain"]:
+            accepted_name = record["currentPreferredUsage"]["hasName"]["fullNameStringPlain"]
+            if mapped["fullName"] != accepted_name:
+              mapped["acceptedName"] = accepted_name
 
           all_mapped.append(mapped)
         return all_mapped

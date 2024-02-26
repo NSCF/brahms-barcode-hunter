@@ -12,6 +12,7 @@
   let source
   let names = []
   let fetching = false
+  let error = false
 
   let timer;
   const debounce = e => {
@@ -23,6 +24,7 @@
 
   const getNames = async _ => {
     if (searchText && searchText.trim() && searchText.trim().split(' ').length > 1) {
+      error = false
       names = []
       fetching = true
       const response = await fetch(base_url + `namesearch?search_string=${searchText}&source=${source}`)
@@ -32,6 +34,7 @@
         fetching = false
       }
       else {
+        error = true
         console.error(response.message)
       }
     }
@@ -90,7 +93,9 @@
       <div>
         {#if fetching}
           <p>Fetching names...</p>
-        {:else}
+        {:else if error}
+          <p>Oops, something went wrong, please see the console</p>
+        {:else if names.length}
           {#each names as name}
           <div class="nameitem">
             <span class="material-symbols-outlined" style="color: gray;" on:click={copyName(name)}>
@@ -98,6 +103,8 @@
             </span>
             {name.fullName}</div>
           {/each}
+        {:else}
+          <p>No names found</p>
         {/if}
       </div>
     </div>
