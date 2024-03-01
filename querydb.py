@@ -145,7 +145,7 @@ def get_WFO_names(search_string):
             "source" : "WFO",
             "identifier": record["id"],
             "status": record["role"],
-            "acceptedName": None
+            "acceptedName": '-'
           }
 
           if record["currentPreferredUsage"] and record["currentPreferredUsage"]["hasName"] and record["currentPreferredUsage"]["hasName"]["fullNameStringPlain"]:
@@ -174,6 +174,10 @@ def get_BODATSA_names(search_string):
       "status": row["status"],
       "acceptedName": row['acceptedname'] # this is already empty if the same as fullname
     }
+
+    if mapped['acceptedName'] is None or mapped['acceptedName'] == '':
+      mapped['acceptedName'] = "-"
+      
     query_results.append(mapped)
   return query_results
   
