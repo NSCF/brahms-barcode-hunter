@@ -3,7 +3,7 @@ from flask import Flask, request, current_app, make_response, render_template, j
 from flask_cors import CORS
 from flask_socketio import SocketIO
 from printerInterface import wait_for_print_job
-from querydb import querydb, get_countries, get_provinces, get_families, get_WFO_names, get_BODATSA_names
+from querydb import querydb, get_countries, get_provinces, get_families, get_WFO_names, get_BODATSA_names, get_BODATSA_extractdate
 
 app = Flask(__name__, static_url_path='', static_folder='dist')
 CORS(app)
@@ -52,8 +52,6 @@ def provinces():
 def families():
   return get_families()
 
-#technical debt here we go...
-# getting the 
 @app.route('/namesearch', methods=["GET"])
 def name_search():
     
@@ -82,6 +80,11 @@ def name_search():
     if source == 'SANBI':
       results = get_BODATSA_names(search_string)
       return results
+
+@app.route('/bodatsaextractdate', methods=["GET"])
+def fetch_date():
+  return get_BODATSA_extractdate()
+
 
 @socketio.on('connect')
 def handle_connect():

@@ -5,6 +5,7 @@ from os import path
 
 datafilepath = r'C:\Users\Ian Engelbrecht\Downloads'
 datafile = r'SANBI-TaxonBackbone-Export-20231120-OpenRefine-withHigherClass-OpenRefine.csv'
+extractdate = r'2023-11-20' # ISO8601 format date of the BRAHMS extract used
 
 dbfields = ['fullname', 'guid', 'status', 'acceptedname']
 
@@ -43,6 +44,18 @@ with open(path.join(datafilepath, datafile), newline='', encoding='utf8') as csv
 
 sys.stdout.write('\033[?25h') #resetting the console cursor
 sys.stdout.flush()
+
+meta = db['meta'] 
+if not meta.has_column('tablename'):
+  meta.create_column('tablename', db.types.string)
+if not meta.has_column('field'):
+  meta.create_column('field', db.types.string)
+if not meta.has_column('value'):
+  meta.create_column('value', db.types.string)
+
+data = dict(tablename='taxa', field="extractdate", value = extractdate)
+meta.upsert(data, ['tablename', 'field'])
+
 
 end = time.perf_counter()
 seconds = (end - start) % (24 * 3600)

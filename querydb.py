@@ -1,3 +1,4 @@
+from os import path
 import re
 import dataset, requests
 
@@ -181,5 +182,15 @@ def get_BODATSA_names(search_string):
     query_results.append(mapped)
   return query_results
   
-
-
+def get_BODATSA_extractdate():
+  if path.exists('taxa.sqlite'):
+    db = dataset.connect('sqlite:///taxa.sqlite')
+    if db.has_table('taxa'):
+      sql = "select * from meta where tablename = 'taxa' and field = 'extractdate'"
+      result = []
+      for row in db.query(sql):
+        result.append(row)
+      return result
+    return []
+  return []
+      

@@ -1,4 +1,5 @@
 <script>
+  import { onMount } from 'svelte';
   import clipboard from 'clipboardy';
   import { SvelteToast, toast } from '@zerodevx/svelte-toast'
 
@@ -13,6 +14,24 @@
   let names = []
   let fetching = false
   let error = false
+
+  let bodatsaextractdate = null
+
+  onMount(async _ => {
+
+    const response = await fetch(base_url + `bodatsaextractdate`)
+      if (response.ok){
+        const data = await response.json()
+        if (data.length) {
+          bodatsaextractdate = data[0].value
+        }
+      }
+      else {
+        error = true
+        console.error(response.message)
+      }
+
+  })
 
   let timer;
   const debounce = e => {
@@ -80,6 +99,9 @@
 
 <main>
   <h2>Taxon name search</h2>
+  {#if bodatsaextractdate}
+  <p class="extractdate">SANBI checklist date: {bodatsaextractdate}</p>
+  {/if}
   <div class="search">
     <div class="fields">
       <select bind:value={source} on:change={getNames}>
@@ -121,6 +143,16 @@
     
     width: 100%;
 
+  }
+
+  h2 {
+    margin-bottom: 0;
+  }
+
+  .extractdate {
+    font-size: 0.8em;
+    margin-top: 0;
+    margin-bottom:3em;
   }
 
   .search {
