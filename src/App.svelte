@@ -18,17 +18,21 @@
 <style>
   a {
     color: gray;
-    font-weight: 600;
+    /* 
+    font-weight: 600; */
     position: fixed;
     right: 10px;
     top: 10px;
     padding: 5px;
-    border: gray solid 1px;
-    border-radius: 10px;
+    /* border: gray solid 1px;
+    border-radius: 10px; */
   }
 
   a:hover {
-    color:whitesmoke;
-    background-color: slategray;
+    color:blue;
+    text-decoration-line: underline;
+    /* 
+    
+    background-color: slategray; */
   }
 </style>

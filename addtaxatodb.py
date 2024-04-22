@@ -9,7 +9,7 @@ datafile = r'SANBI-TaxonBackbone-Export-20231120-OpenRefine-withHigherClass-Open
 dbfields = ['fullname', 'guid', 'status', 'acceptedname']
 
 print('creating taxon table')
-db = dataset.connect('sqlite:///brahms.sqlite')
+db = dataset.connect('sqlite:///taxa.sqlite')
 table = db['taxa'] #recreate
 for field in dbfields:
   table.create_column(field, db.types.string)

@@ -161,7 +161,7 @@ def get_WFO_names(search_string):
     raise Exception('search string is required')
   
 def get_BODATSA_names(search_string):
-  db = dataset.connect('sqlite:///brahms.sqlite')
+  db = dataset.connect('sqlite:///taxa.sqlite')
 
   search_string = re.sub(r'\s+', '% ', search_string + ' ').strip() # adding the space on the end so we get the extra %
   sql = "select * from taxa where fullname like :search"
