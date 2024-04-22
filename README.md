@@ -60,3 +60,6 @@ Note that for the taxon name you can use the first three letters of the genus an
 
 To shutdown open the command window where you ran the command above and press `Ctrl + C`. This will shutdown the server, and you can close the browser tab. Next time you want to run the tool you only need to run `python server.py` again. 
 
+## Taxon names
+
+The newer versions of this tool also allow for taxon names to be found quickly, using the 'Name Search' link at the top right of the barcode hunter page. That takes you to a new page with a single search box and a dropdown for searching the SANBI checklist or WFO for names. To use the SANBI checklist, you need an extract from the SANBI taxon backbone (the SA National Plants Checklist) with fields 'fullname', 'guid', 'status', and 'acceptedname' (case is important, rename fields if necessary). Update the file path and name in addtaxatodb.py and run that file to create the taxa.sqlite database file. Then the SANBI option can be used in the Name Search. 
