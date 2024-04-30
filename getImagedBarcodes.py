@@ -3,8 +3,6 @@
 # also note that the code for getting unique barcodes needs to be edited per herbarium
 #if this throws an error try deleting token.json and then run again to reauthenticate
 
-from __future__ import print_function
-
 import os.path
 import re
 import csv
@@ -68,6 +66,8 @@ def main():
     zeros = []
     errors = {}
     for folder in folders['files']:
+      if folder['name'].lower() == 'archive':
+        continue
       processFolder(drive, sheetService, folder['name'], folder['id'], barcodesSet, recordCounter, barcodeSheetsIndex, zeros, errors)
 
     if len(zeros) > 0:
