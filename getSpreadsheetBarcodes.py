@@ -1,7 +1,7 @@
 # get the list of barcodes from the imaging spreadsheets
 # note that only spreadsheets that conform to the naming standard are read (ie date string)
 # also note that the code for getting unique barcodes needs to be edited per herbarium
-#if this throws an error try deleting token.json and then run again to reauthenticate
+# if this throws an error try deleting token.json and then run again to reauthenticate
 
 import os.path
 import re
@@ -14,7 +14,8 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
-DRIVE_FOLDER_ID = '1fFrdeM8PiRR-hY2g9PiOiIkUIWkp_0hp' # Moss
+herbarium = 'Bews'
+DRIVE_FOLDER_ID = '1tgnerZejjRQVwOXWBQo45EOBJqAOHWer'
 
 # If modifying these scopes, delete the file token.json.
 SCOPES = [
@@ -82,23 +83,29 @@ def main():
       print('all folders and sheets successfully processed')
 
 
-    print(len(barcodesSet), 'unique barcodes were found, saving to file...')
+    print(len(barcodesSet), 'unique barcodes were found')
     barcodesSet = list(barcodesSet)
     barcodesSet.sort()
-    with open('uniqueBarcodes.csv', 'w', encoding='UTF8', newline='') as f:
+
+    with open(herbarium + '_uniqueBarcodes.csv', 'w', encoding='UTF8', newline='') as f:
       writer = csv.writer(f)
       writer.writerow(['barcode'])
       for barcode in barcodesSet:
         writer.writerow([barcode])
     
-    
-    with open('barcodesIndex.csv', 'w', encoding='UTF8', newline='') as f:
+    totalBarcodes = 0
+    with open(herbarium + '_barcodesIndex.csv', 'w', encoding='UTF8', newline='') as f:
       writer = csv.writer(f)
-      writer.writerow(['barcode', 'files'])
-      for key, value in barcodeSheetsIndex.items():
-        writer.writerow([key, '|'.join(value)])
+      writer.writerow(['barcode','total_images', 'found_in'])
+      for barcode, locations in barcodeSheetsIndex.items():
+        total_records = len(locations) # records and not images because not all barcodes on a spreadsheet will have an image...
+        totalBarcodes += total_records
+        uniques = set(locations)
+        writer.writerow([barcode, total_records, '|'.join(uniques)])
     
-    print('all done, see uniqueBarcodes.csv and barcodesIndex.csv')
+    print(totalBarcodes, 'records in spreadsheets in total')
+    print(f'files saved, see {herbarium}_uniqueBarcodes.csv and {herbarium}_barcodesIndex.csv')
+    print('all done...')
       
   except HttpError as err:
     print(err)
@@ -163,10 +170,10 @@ def processSheet(sheetService, sheetID, sheetName, folderPath, barcodesList, rec
 
       #update the index
       if barcode in barcodeSheetsIndex:
-        barcodeSheetsIndex[barcode].add(folderPath + '/' + sheetName)
+        barcodeSheetsIndex[barcode].append(folderPath + '/' + sheetName)
       else:
-        barcodeSheetsIndex[barcode] = set()
-        barcodeSheetsIndex[barcode].add(folderPath + '/' + sheetName)
+        barcodeSheetsIndex[barcode] = []
+        barcodeSheetsIndex[barcode].append(folderPath + '/' + sheetName)
 
       if barcode not in barcodesList:
         counter += 1

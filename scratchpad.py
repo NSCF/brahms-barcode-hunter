@@ -1,27 +1,18 @@
-# A place for miscellaneous code...
+from os import walk
 
-import dataset
-import csv
+f = r"F:\Herbarium imaging\NU\Main Collection"
+g = r"G:\Herbarium imaging\NU\Main Collection"
 
-db = dataset.connect('sqlite:///brahms.sqlite')
+f_files = []
+for (dirpath, dirnames, filenames) in walk(f):
+    f_files.extend(filenames)
 
-sql = 'select * from specimens where fullname like \'%barleria%\''
-qry = db.query(sql)
-results = []
-for row in qry:
-    results.append({
-        "barcode": row['Barcode'], 
-        "family": row['FamilyName'], 
-        "fullname": row['FullName']
-    })
-db.close()
-db = None
+g_files = []
+for (dirpath, dirnames, filenames) in walk(g):
+    g_files.extend(filenames)
 
-with open('temprecords.csv', 'w', newline='') as csvfile:
-    fieldnames = results[0].keys()
-    writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+f_set = set(f_files)
+g_set = set(g_files)
 
-    writer.writeheader()
-
-    for result in results:
-        writer.writerow(result)
+both = f_set.intersection(g_set)
+print(len(both), 'files in both directories')
