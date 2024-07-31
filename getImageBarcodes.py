@@ -4,8 +4,9 @@ import re
 import csv
 import os
 
-dir = r'T:\Herbarium imaging\NU'
-drive = "NSCF30"
+dir = r'D:\Herbarium imaging\NU\JPEG'
+drive = "BEWS01"
+file_ext = '.jpg'
 
 print('reading', drive)
 with open(drive + '.csv', 'w', encoding='UTF8', newline='') as f:
@@ -13,10 +14,10 @@ with open(drive + '.csv', 'w', encoding='UTF8', newline='') as f:
   writer.writerow(['drive', 'location','barcode'])
   for (root,dirs,files) in os.walk(dir):
     for file in files:
-      if file.lower().endswith('.jpg'):
+      if file.lower().endswith(file_ext):
         location = root.replace(dir, '')
         barcode = re.split('[_-]', file)[0]
-        barcode = re.sub('.jpg$', '', barcode, re.I)
+        barcode = re.sub(file_ext + '$', '', barcode, re.I)
         writer.writerow([drive, location, barcode])
 
 print('all done...')
