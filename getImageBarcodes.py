@@ -1,5 +1,5 @@
 # basically just getting the list of filenames of a particular file type from a particular location and saving to csv
-# the outputs can then be merged and compared with the output of 
+# the outputs can then be merged and compared with the output of getSpreadsheetBarcodes
 import re
 import csv
 import os
