@@ -6,8 +6,9 @@ from os import path
 import sqlite3
 import csv
 
-lrcat_dir = r"C:\temp\Lightroom catalog copies"
-lrcat_file = r"NU-v13-3.lrcat"
+lrcat_dir = r"C:\Users\ianic\OneDrive\Pictures\Lightroom\UJ Herbarium Catalog"
+lrcat_file = r"UJ Herbarium Catalog.lrcat"
+outfile = 'lrcat_uj.csv'
 
 def dict_factory(cursor, row):
   d = {}
@@ -37,7 +38,7 @@ cursor.execute(qry)
 
 print('writing data to file, this might take a few minutes...')
 
-with open('lrcat_data.csv', 'w', newline='', errors='ignore') as f: 
+with open(outfile, 'w', newline='', errors='ignore') as f: 
   writer = csv.writer(f)
   row = cursor.fetchone()
   writer.writerow(row.keys())
