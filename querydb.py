@@ -155,7 +155,10 @@ def get_WFO_names(search_string):
               mapped["acceptedName"] = accepted_name
 
           all_mapped.append(mapped)
-        return all_mapped
+
+        sorted_mapped = sorted(all_mapped, key=lambda d: d['fullName'])
+        return sorted_mapped
+    
     else:
         return (response.text, response.status_code)
   else:
@@ -180,7 +183,9 @@ def get_BODATSA_names(search_string):
       mapped['acceptedName'] = "-"
       
     query_results.append(mapped)
-  return query_results
+
+  sorted_results = sorted(query_results, key=lambda d: d['fullName'])
+  return sorted_results
   
 def get_BODATSA_extractdate():
   if path.exists('taxa.sqlite'):
