@@ -54,6 +54,7 @@
       }
       else {
         error = true
+        fetching = false
         console.error(response.message)
       }
     }
