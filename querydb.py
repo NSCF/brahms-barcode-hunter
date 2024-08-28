@@ -71,7 +71,6 @@ def querydb(searchparams):
     results.append(qry_result)
   
   db.close()
-  db = None
   return results
 
 def get_countries():
@@ -82,7 +81,6 @@ def get_countries():
   for row in qryResults:
     results.append(row['Country'])
   db.close()
-  db = None
   return results
 
 def get_provinces():
@@ -93,7 +91,6 @@ def get_provinces():
   for row in qry:
     results.append(row['MajorAdmin'])
   db.close()
-  db = None
   return results
 
 def get_families():
@@ -104,7 +101,6 @@ def get_families():
   for row in qry:
     results.append(row['FamilyName'])
   db.close()
-  db = None
   return results
 
 def get_WFO_names(search_string):
@@ -162,6 +158,7 @@ def get_WFO_names(search_string):
     raise Exception('search string is required')
   
 def get_BODATSA_names(search_string):
+  
   db = dataset.connect('sqlite:///taxa.sqlite')
 
   search_string = re.sub(r'\s+', '% ', search_string + ' ').strip() # adding the space on the end so we get the extra %
