@@ -76,9 +76,9 @@ def querydb(searchparams):
 def get_countries():
   db = dataset.connect('sqlite:///brahms.sqlite')
   sql = 'select distinct country from specimens'
-  qryResults = db.query(sql)
+  qry = db.query(sql)
   results = []
-  for row in qryResults:
+  for row in qry:
     results.append(row['Country'])
   db.close()
   return results
