@@ -1,11 +1,14 @@
 import threading, webbrowser, requests, re
 from flask import Flask, request, current_app, make_response, render_template, jsonify
+from flask_caching import Cache
 from flask_cors import CORS
 from flask_socketio import SocketIO
 from printerInterface import wait_for_print_job
 from querydb import querydb, get_countries, get_provinces, get_families, get_WFO_names, get_BODATSA_names, get_BODATSA_extractdate
 
+cache = Cache(config={ 'CACHE_TYPE': 'SimpleCache' })
 app = Flask(__name__, static_url_path='', static_folder='dist')
+cache.init_app(app)
 CORS(app)
 socketio = SocketIO(app, cors_allowed_origins="*")
 
@@ -53,6 +56,7 @@ def families():
   return get_families()
 
 @app.route('/namesearch', methods=["GET"])
+@cache.cached(timeout=36000, query_string=True)
 def name_search():
     
     if 'source' not in request.args:
