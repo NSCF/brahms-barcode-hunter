@@ -14,6 +14,7 @@
   let names = []
   let fetching = false
   let error = false
+  let copyNameOnly = false
 
   let bodatsaextractdate = null
 
@@ -71,17 +72,23 @@
   }
 
   const copyName = name => {
+    
     let values = [
       name.fullName,
       name.source,
-      name.identifier,
-      name.status,
-      name.acceptedName
+      
     ]
+
+    if (!copyNameOnly) {
+      values = [...values, name.identifier, name.status, name.acceptedName]
+    }
+    
     let copyString = values.join('\t').trim()
+
     clipboard.write(copyString).then(_ => { 
       toast.push('Name copied')
     });
+    
   }
 
   const clear = _ => {
@@ -105,15 +112,23 @@
   {/if}
   <div class="search">
     <div class="fields">
-      <select bind:value={source} on:change={getNames}>
-        <option value="SANBI">SANBI</option>
-        <option value="WFO">WFO</option>
-      </select>
-      <input placeholder="Add partial taxon names here, e.g. 'wel mir', and press enter.. " on:input={debounce} bind:this={searchInput}/>
-      <span class="material-symbols-outlined refresh" on:click={clear}>
-        refresh
-        </span>
-      <div>
+      <div style="display:flex; justify-content:flex-end;">
+        <div>
+          <input type="checkbox" id="names-only" style="width:fit-content;"  bind:value={copyNameOnly}>
+          <label for="names-only">copy name only</label><br>
+        </div>
+      </div>
+      <div style="position:relative;">
+        <select bind:value={source} on:change={getNames}>
+          <option value="SANBI">SANBI</option>
+          <option value="WFO">WFO</option>
+        </select>
+        <input placeholder="Add partial taxon names here, e.g. 'wel mir', and press enter.. " on:input={debounce} bind:this={searchInput}/>
+        <span class="material-symbols-outlined refresh" on:click={clear}>
+          refresh
+          </span>
+        <div>
+      </div>
         {#if fetching}
           <p>Fetching names...</p>
         {:else if error}

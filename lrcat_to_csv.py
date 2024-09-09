@@ -6,9 +6,9 @@ from os import path
 import sqlite3
 import csv
 
-lrcat_dir = r"C:\Users\ianic\OneDrive\Pictures\Lightroom\UJ Herbarium Catalog"
-lrcat_file = r"UJ Herbarium Catalog.lrcat"
-outfile = 'lrcat_uj.csv'
+lrcat_dir = r"C:\Users\ianic\OneDrive\Pictures\Lightroom\NU Herbarium Catalogue"
+lrcat_file = r"NU-v13-3.lrcat"
+outfile = 'lrcat_nu.csv'
 
 def dict_factory(cursor, row):
   d = {}
