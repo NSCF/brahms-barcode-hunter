@@ -75,8 +75,7 @@
     
     let values = [
       name.fullName,
-      name.source,
-      
+      name.source
     ]
 
     if (!copyNameOnly) {
@@ -114,7 +113,7 @@
     <div class="fields">
       <div style="display:flex; justify-content:flex-end;">
         <div>
-          <input type="checkbox" id="names-only" style="width:fit-content;"  bind:value={copyNameOnly}>
+          <input type="checkbox" id="names-only" style="width:fit-content;"  bind:checked={copyNameOnly}>
           <label for="names-only">copy name only</label><br>
         </div>
       </div>
@@ -136,7 +135,7 @@
         {:else if names.length}
           {#each names as name}
           <div class="nameitem">
-            <span class="material-symbols-outlined" style="color: gray;" on:click={copyName(name)}>
+            <span class="material-symbols-outlined" style="color: gray;" on:click={_ => copyName(name)}>
               content_copy
             </span>
             {name.fullName}</div>
