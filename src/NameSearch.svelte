@@ -114,7 +114,7 @@
       <div style="display:flex; justify-content:flex-end;">
         <div>
           <input type="checkbox" id="names-only" style="width:fit-content;"  bind:checked={copyNameOnly}>
-          <label for="names-only">copy name only</label><br>
+          <label for="names-only">copy name + identifier only</label><br>
         </div>
       </div>
       <div style="position:relative;">
