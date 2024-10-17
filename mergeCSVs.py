@@ -1,13 +1,17 @@
 # merges a set of CSVs from a directory into one file, and includes the file names in the dataset. 
 # note that all the CSVs have to have the same headers. Use checkCSVHeaders.py for that. 
-# This is an alternative xsv (https://github.com/BurntSushi/xsv) where you want to include file names. 
+# This is an alternative xsv (https://github.com/BurntSushi/xsv) where you want to include file names and avoid the mismatched field counts from xsv. 
 
 import os
 import csv
 
-dir = r'D:\NSCF Data WG\Current projects\Herbarum mass imaging\Data\Moss'
+dir = r'C:\Herbarium imaging\NU\data'
 
 headers = [
+  'section',
+  'station',
+  'date',
+  'order',
   'barcode', 
   'note', 
   'dwc:family', 

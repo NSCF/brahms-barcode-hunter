@@ -2,8 +2,12 @@
 import os
 import csv
 
-dir = r'D:\NSCF Data WG\Current projects\Herbarum mass imaging\Data\Moss'
+dir = r'C:\Herbarium imaging\NU\data'
 headers = [
+  'section',
+  'station',
+  'date',
+  'order',
   'barcode', 
   'note', 
   'dwc:family', 

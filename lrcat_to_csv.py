@@ -6,9 +6,9 @@ from os import path
 import sqlite3
 import csv
 
-lrcat_dir = r"C:\Users\ianic\OneDrive\Pictures\Lightroom\ZULU Herbarium Catalog"
-lrcat_file = r"ZULU Herbarium Catalog.lrcat"
-outfile = 'lrcat_zulu.csv'
+lrcat_dir = r"C:\Users\ianic\OneDrive\Pictures\Lightroom\KEI Herbarium Catalog"
+lrcat_file = r"KEI Herbarium Catalog.lrcat"
+outfile = 'lrcat_kei.csv'
 
 def dict_factory(cursor, row):
   d = {}
@@ -25,15 +25,22 @@ cursor = conn.cursor()
 # AgHarvestedIptcMetadata has day month and year as floats
 # AgInternedExifCameraSN
 qry = """ 
-  SELECT AgLibraryFile.basename as file, AgLibraryFile.extension as type, AgInternedExifCameraSN.value as camera, Adobe_images.captureTime as CaptureTime 
+  SELECT AgLibraryFile.basename as file, AgLibraryFile.extension as type, AgLibraryFolder.pathFromRoot as location, AgInternedExifCameraSN.value as camera, Adobe_images.captureTime as CaptureTime 
   FROM AgLibraryFile
   LEFT JOIN Adobe_images ON AgLibraryFile.id_local=Adobe_images.rootFile
+  LEFT JOIN AgLibraryFolder ON AgLibraryFolder.id_local=AgLibraryFile.folder
   LEFT JOIN AgHarvestedExifMetadata ON AgHarvestedExifMetadata.image = Adobe_images.id_local
   LEFT JOIN AgInternedExifLens ON AgInternedExifLens.id_local = AgHarvestedExifMetadata.lensRef
   LEFT JOIN AgInternedExifCameraSN on AgInternedExifCameraSN.id_local = AgHarvestedExifMetadata.cameraSNRef;
 """
 
-cursor.execute(qry)
+try:
+  cursor.execute(qry)
+except Exception as ex:
+  print('Error reading database:')
+  print(str(ex))
+  exit()
+
 # records = cursor.fetchall()
 
 print('writing data to file, this might take a few minutes...')
