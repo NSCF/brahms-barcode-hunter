@@ -119,6 +119,7 @@ def get_WFO_names(search_string):
           fullNameStringPlain,
           id,
           role,
+          nomenclaturalStatus,
           currentPreferredUsage {
             hasName {
               fullNameStringPlain,
@@ -137,6 +138,11 @@ def get_WFO_names(search_string):
         #we need to add the source
         all_mapped = []
         for record in data:
+
+          # we don't want deprecated names
+          if record['nomenclaturalStatus'] == 'deprecated':
+            continue
+
           mapped = {
             "fullName": record["fullNameStringPlain"],
             "source" : "WFO",
