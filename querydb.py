@@ -174,6 +174,11 @@ def get_BODATSA_names(search_string):
   sql = "select * from taxa where fullname like :search"
   query_results = []
   for row in db.query(sql, search = search_string):
+
+    #remove auct. names
+    if 'auct.' in row['fullname']: 
+      continue;
+      
     mapped = {
       "fullName": row["fullname"],
       "source" : "SANBI",
