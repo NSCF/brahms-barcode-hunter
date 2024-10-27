@@ -4,7 +4,7 @@ from flask_caching import Cache
 from flask_cors import CORS
 from flask_socketio import SocketIO
 from printerInterface import wait_for_print_job
-from querydb import querydb, get_countries, get_provinces, get_families, get_WFO_names, get_BODATSA_names, get_BODATSA_extractdate
+from querydb import querydb, get_countries, get_provinces, get_families, get_WFO_names, get_BODATSA_names, get_BODATSA_extractdate, get_WFO_by_ID
 
 cache = Cache(config={ 'CACHE_TYPE': 'SimpleCache' })
 app = Flask(__name__, static_url_path='', static_folder='dist')
@@ -84,6 +84,20 @@ def name_search():
     if source == 'SANBI':
       results = get_BODATSA_names(search_string)
       return results
+
+@app.route('/wfoname/<wfo_id>', methods=["GET"])
+@cache.cached(timeout=36000, query_string=True)
+def get_wfo_name(wfo_id):
+    
+    if not wfo_id:
+      return ('wfo id is required', 400)
+  
+    try:
+      result = get_WFO_by_ID(wfo_id)
+      return result
+    except Exception as ex:
+      return(str(ex), 500)
+    
 
 @app.route('/bodatsaextractdate', methods=["GET"])
 def fetch_date():

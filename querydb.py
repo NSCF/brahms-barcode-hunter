@@ -1,6 +1,7 @@
 from os import path
 import re
 import dataset, requests
+from wfo_utils import map_record, get_parent_author
 
 def querydb(searchparams):
 
@@ -103,66 +104,54 @@ def get_families():
   db.close()
   return results
 
+def get_WFO_by_ID(wfo_id):
+
+  if wfo_id and wfo_id.strip() and re.match("wfo\-\d{10}", wfo_id):
+
+    db = dataset.connect('sqlite:///wfo.sqlite')
+    sql = "select * from wfo_taxa where taxonID = :wfo_id"
+    results = []
+    for row in db.query(sql, wfo_id = wfo_id):
+
+      if row['scientificNameAuthorship'] is None:
+        row['scientificNameAuthorship'] = get_parent_author(row, db)
+
+      mapped = map_record(row)
+        
+      results.append(mapped)
+
+    db.close()
+
+    if results:
+      return results[0] # there should only be one
+    else:
+      return {}
+    
+  else:
+    raise Exception('invalid wfo_id')
+
 def get_WFO_names(search_string):
   if search_string and search_string.strip():
 
-    search_string = re.sub(r'\s+', '* ', search_string)
+    db = dataset.connect('sqlite:///wfo.sqlite')
 
-    url = 'https://list.worldfloraonline.org/gql.php'
-    headers = {
-      'Content-Type': 'application/json',
-    }
+    search_string = re.sub(r'\s+', '% ', search_string + ' ').strip() # adding the space on the end so we get the extra %
+    sql = "select * from wfo_taxa where scientificName like :search and taxonomicStatus != \'deprecated\'"
+    query_results = []
+    for row in db.query(sql, search = search_string):
 
-    query = '''
-      query GetTaxa($searchString: String!) {
-        taxonNameSuggestion(termsString: $searchString) {
-          fullNameStringPlain,
-          id,
-          role,
-          nomenclaturalStatus,
-          currentPreferredUsage {
-            hasName {
-              fullNameStringPlain,
-              authorsString
-            }
-          }
-        }
-      }
-    '''
+      if row['scientificNameAuthorship'] is None:
+        row['scientificNameAuthorship'] = get_parent_author(row, db)
 
-    data = {'query': query, 'variables': {'searchString': search_string}}
-    response = requests.post(url, json=data, headers=headers)
-    if response.status_code == 200:
-        results = response.json()
-        data = results["data"]["taxonNameSuggestion"]
-        #we need to add the source
-        all_mapped = []
-        for record in data:
+      mapped = map_record(row)
+        
+      query_results.append(mapped)
 
-          # we don't want deprecated names
-          if record['nomenclaturalStatus'] == 'deprecated':
-            continue
+    sorted_results = sorted(query_results, key=lambda d: d['fullName'])
+    db.close()
 
-          mapped = {
-            "fullName": record["fullNameStringPlain"],
-            "source" : "WFO",
-            "identifier": record["id"],
-            "status": record["role"],
-            "acceptedName": '-'
-          }
-
-          if record["currentPreferredUsage"] and record["currentPreferredUsage"]["hasName"] and record["currentPreferredUsage"]["hasName"]["fullNameStringPlain"]:
-            accepted_name = record["currentPreferredUsage"]["hasName"]["fullNameStringPlain"]
-            if mapped["fullName"] != accepted_name:
-              mapped["acceptedName"] = accepted_name
-
-          all_mapped.append(mapped)
-
-        sorted_mapped = sorted(all_mapped, key=lambda d: d['fullName'])
-        return sorted_mapped
-    
-    else:
-        return (response.text, response.status_code)
+    return sorted_results
+  
   else:
     raise Exception('search string is required')
   
@@ -192,6 +181,7 @@ def get_BODATSA_names(search_string):
       
     query_results.append(mapped)
 
+  db.close()
   sorted_results = sorted(query_results, key=lambda d: d['fullName'])
   return sorted_results
   

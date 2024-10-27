@@ -42,6 +42,7 @@ with open(path.join(datafilepath, datafile), newline='', encoding='utf8') as csv
       print(rowcount, 'records added', end='\r')
 
 
+
 sys.stdout.write('\033[?25h') #resetting the console cursor
 sys.stdout.flush()
 
@@ -56,6 +57,7 @@ if not meta.has_column('value'):
 data = dict(tablename='taxa', field="extractdate", value = extractdate)
 meta.upsert(data, ['tablename', 'field'])
 
+db.close()
 
 end = time.perf_counter()
 seconds = (end - start) % (24 * 3600)

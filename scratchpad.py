@@ -1,18 +1,22 @@
-from os import walk
+import csv, re
+from os import path
 
-f = r"F:\Herbarium imaging\NU\Main Collection"
-g = r"G:\Herbarium imaging\NU\Main Collection"
+csvDir = r'C:\Users\ianic\Downloads'
+csvFile = r'SANBI-TaxonBackbone-Export-20240823-OpenRefine-SpecialCharAuthors.csv'
+specialChars = list('ÁÀÂÃÄáàâãäÉÈÊËéèêëÍÌÎÏíìîïÓÒÔÕÖóòôõöÚÙÛÜúùûüČÇçÑñØøÆæŒœŠšŽžÅåÞðßØœ')
 
-f_files = []
-for (dirpath, dirnames, filenames) in walk(f):
-    f_files.extend(filenames)
+name_set = set()
+with open(path.join(csvDir, csvFile), 'r', newline='', errors='ignore', encoding='utf8') as f:
+  reader = csv.DictReader(f)
+  for row in reader:
+    authors = row['WfoidAuthor'].replace('(', '')
+    author_list = re.split(r"[,)&]|ex", authors)
+    for author in author_list:
+      if bool(re.search(r"[^\x00-\x7F]", author)):
+        name_set.add(author.strip())
 
-g_files = []
-for (dirpath, dirnames, filenames) in walk(g):
-    g_files.extend(filenames)
+name_set = list(name_set)
+name_set.sort()
 
-f_set = set(f_files)
-g_set = set(g_files)
-
-both = f_set.intersection(g_set)
-print(len(both), 'files in both directories')
+for name in name_set:
+  print(name)
