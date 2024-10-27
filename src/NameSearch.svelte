@@ -49,8 +49,14 @@
       fetching = true
       const response = await fetch(base_url + `namesearch?search_string=${searchText}&source=${source}`)
       if (response.ok){
-        names = await response.json()
-        console.log(names[0])
+        let results = await response.json()
+        names = results.map(name => {
+          if (name.fullName == name.acceptedName) {
+            name.acceptedName = '-'
+          }
+          return name
+        })
+
         fetching = false
       }
       else {
