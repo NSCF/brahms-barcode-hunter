@@ -1,5 +1,5 @@
 import threading, webbrowser, requests, re
-from flask import Flask, request, current_app, make_response, render_template, jsonify
+from flask import Flask, abort, request, current_app, make_response, render_template, jsonify
 from flask_caching import Cache
 from flask_cors import CORS
 from flask_socketio import SocketIO
@@ -94,9 +94,12 @@ def get_wfo_name(wfo_id):
   
     try:
       result = get_WFO_by_ID(wfo_id)
-      return result
+      if not result:
+        abort(404)
+      else:
+        return result
     except Exception as ex:
-      return(str(ex), 500)
+      return (str(ex), 500)
     
 
 @app.route('/bodatsaextractdate', methods=["GET"])

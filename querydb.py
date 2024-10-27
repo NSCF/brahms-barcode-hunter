@@ -116,6 +116,10 @@ def get_WFO_by_ID(wfo_id):
       if row['scientificNameAuthorship'] is None:
         row['scientificNameAuthorship'] = get_parent_author(row, db)
 
+      # if author is still None then it means there are multiple taxa with the parent name, and we can't actually be sure which infraspecific taxon we're dealing with...
+      if not row['scientificNameAuthorship']:
+        return None
+
       mapped = map_record(row)
         
       results.append(mapped)
@@ -125,7 +129,7 @@ def get_WFO_by_ID(wfo_id):
     if results:
       return results[0] # there should only be one
     else:
-      return {}
+      return None
     
   else:
     raise Exception('invalid wfo_id')
