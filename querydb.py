@@ -116,10 +116,6 @@ def get_WFO_by_ID(wfo_id):
       if row['scientificNameAuthorship'] is None:
         row['scientificNameAuthorship'] = get_parent_author(row, db)
 
-      # if author is still None then it means there are multiple taxa with the parent name, and we can't actually be sure which infraspecific taxon we're dealing with...
-      if not row['scientificNameAuthorship']:
-        return None
-
       mapped = map_record(row)
         
       results.append(mapped)
@@ -147,8 +143,13 @@ def get_WFO_names(search_string):
       if row['scientificNameAuthorship'] is None:
         row['scientificNameAuthorship'] = get_parent_author(row, db)
 
+      # if author is still None then it means there are multiple taxa with the parent name, 
+      # and we can't actually be sure which infraspecific taxon we're dealing with,
+      # so we don't want to return it as an option
+      if not row['scientificNameAuthorship']:
+        continue
+
       mapped = map_record(row)
-        
       query_results.append(mapped)
 
     sorted_results = sorted(query_results, key=lambda d: d['fullName'])
