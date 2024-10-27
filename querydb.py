@@ -1,7 +1,7 @@
 from os import path
 import re
 import dataset, requests
-from wfo_utils import map_record, get_parent_author
+from wfo_utils import map_record, get_parent_author, get_accepted_name
 
 def querydb(searchparams):
 
@@ -117,6 +117,7 @@ def get_WFO_by_ID(wfo_id):
         row['scientificNameAuthorship'] = get_parent_author(row, db)
 
       mapped = map_record(row)
+      mapped['acceptedName'] = get_accepted_name(row, db)
         
       results.append(mapped)
 
@@ -150,6 +151,8 @@ def get_WFO_names(search_string):
         continue
 
       mapped = map_record(row)
+      mapped['acceptedName'] = get_accepted_name(row, db)
+
       query_results.append(mapped)
 
     sorted_results = sorted(query_results, key=lambda d: d['fullName'])

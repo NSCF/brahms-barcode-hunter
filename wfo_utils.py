@@ -33,7 +33,6 @@ def map_record(wfo_record):
     "source" : "WFO",
     "identifier": wfo_record["taxonID"],
     "status": (wfo_record["taxonomicStatus"]).lower(),
-    "acceptedName": '-'
   }
 
   return mapped
@@ -64,4 +63,13 @@ def get_parent_author(wfo_record, db):
         return None
 
   return wfo_record['scientificNameAuthorship']
+
+def get_accepted_name(wfo_record, db):
+  while (wfo_record['acceptedNameUsageID'] is not None):
+    sql = 'select * from wfo_taxa where taxonID = :search'
+    results =  db.query(sql, search = wfo_record['acceptedNameUsageID'])
+    for row in results:
+      wfo_record = row
+
+  return wfo_record['scientificName']
   
