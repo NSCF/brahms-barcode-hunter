@@ -81,7 +81,7 @@
     
     let values = [
       name.fullName,
-      name.source
+      name.identifier
     ]
 
     if (!copyNameOnly) {
