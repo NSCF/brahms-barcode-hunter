@@ -1,3 +1,5 @@
+import re
+
 def make_fullname(wfo_record):
   ignore = ['subsp.', 'var.', 'subvar.', 'f.', 'subf.']
   name = wfo_record['scientificName']
@@ -72,4 +74,39 @@ def get_accepted_name(wfo_record, db):
       wfo_record = row
 
   return wfo_record['scientificName']
+
+def replace_specialchars(string):
+
+  string = string.replace('Č', 'C')                              \
+    .replace('Ç', 'C')                              \
+    .replace('ç', 'c')                              \
+    .replace('Ñ', 'N')                              \
+    .replace('ñ', 'n')                              \
+    .replace('Æ', 'AE')                             \
+    .replace('æ', 'ae')                             \
+    .replace('Œ', 'OE')                             \
+    .replace('œ', 'oe')                             \
+    .replace('Š', 'S')                              \
+    .replace('š', 's')                              \
+    .replace('Ž', 'Z')                              \
+    .replace('ž', 'z')                              \
+    .replace('Þ', 'Th')                             \
+    .replace('ð', 'd')                              \
+    .replace('ß', 'ss')                             \
+    .replace('œ', 'oe')                            
   
+  string = re.sub(r'[áàâãäå]+', 'a', string)
+  string = re.sub(r'[ÉÈÊË]+', 'E', string)
+  string = re.sub(r'[éèêë]+', 'e', string)
+  string = re.sub(r'[ÍÌÎÏ]+', 'I', string)
+  string = re.sub(r'[íìîï]+', 'i', string)
+  string = re.sub(r'[ÓÒÔÕÖØ]+', 'O', string)
+  string = re.sub(r'[óòôõöø]+', 'o', string)
+  string = re.sub(r'[ÚÙÛÜ]+', 'U', string)
+  string = re.sub(r'[úùûü]+', 'u', string)
+  string = re.sub(r'[ŁĹĻĽḶḺȽL̃]+', 'L', string)
+  string = re.sub(r'[łĺļľḷḻƚl̃]+', 'l', string)
+  string = re.sub(r'[ÝŶŸȲɎỲƳȜẎỴỾƔ]+', 'Y', string)
+  string = re.sub(r'[ýŷÿȳɏỳƴȝẏỵỿƣ]+', 'y', string)
+
+  return string
