@@ -162,7 +162,35 @@ def get_WFO_names(search_string):
   
   else:
     raise Exception('search string is required')
-  
+
+def get_WFO_canonical(canonical_name):
+
+  if canonical_name and canonical_name.strip():
+
+    db = dataset.connect('sqlite:///wfo.sqlite')
+    sql = "select * from wfo_taxa where scientificName like :canonical"
+    results = []
+    for row in db.query(sql, canonical = canonical_name.strip()+'%'):
+
+      if row['scientificNameAuthorship'] is None:
+        row['scientificNameAuthorship'] = get_parent_author(row, db)
+
+      mapped = map_record(row)
+      mapped['acceptedName'] = get_accepted_name(row, db)
+        
+      results.append(mapped)
+
+    db.close()
+
+    if results:
+      return results
+    else:
+      return None
+    
+  else:
+    raise Exception('invalid canonical name')
+
+
 def get_BODATSA_names(search_string):
   
   db = dataset.connect('sqlite:///taxa.sqlite')
