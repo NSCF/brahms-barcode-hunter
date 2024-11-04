@@ -112,9 +112,7 @@
 
     if (!copyNameOnly) {
       values = [
-        name.fullName,
-        source,
-        name.identifier,
+        ...values,
         name.status, 
         name.acceptedName
       ]
