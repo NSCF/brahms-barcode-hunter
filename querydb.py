@@ -131,6 +131,7 @@ def get_WFO_by_ID(wfo_id):
   else:
     raise Exception('invalid wfo_id')
 
+# TODO move back to the WFO API if they fix the issue with searches with multiple name parts https://github.com/rogerhyam/wfo-plant-list/issues/11
 def get_WFO_names(search_string):
   if search_string and search_string.strip():
 
@@ -189,7 +190,6 @@ def get_WFO_canonical(canonical_name):
     
   else:
     raise Exception('invalid canonical name')
-
 
 def get_BODATSA_names(search_string):
   

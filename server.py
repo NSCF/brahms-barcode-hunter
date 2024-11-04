@@ -5,7 +5,7 @@ from flask_caching import Cache
 from flask_cors import CORS
 from flask_socketio import SocketIO
 from printerInterface import wait_for_print_job
-from querydb import querydb, get_countries, get_provinces, get_families, get_WFO_names, get_BODATSA_names, get_BODATSA_extractdate, get_WFO_by_ID, get_WFO_canonical
+from querydb import querydb, get_countries, get_provinces, get_families, get_WFO_names, get_BODATSA_names, get_BODATSA_extractdate
 
 cache = Cache(config={ 'CACHE_TYPE': 'SimpleCache' })
 app = Flask(__name__, static_url_path='', static_folder='dist')
@@ -74,7 +74,6 @@ def name_search():
     
     source = request.args['source']   
     search_string = request.args['search_string']
-
     if source == 'WFO':
       try:
         results = get_WFO_names(search_string)
@@ -86,37 +85,37 @@ def name_search():
       results = get_BODATSA_names(search_string)
       return results
 
-@app.route('/wfoname/<wfo_id>', methods=["GET"])
-@cache.cached(timeout=36000, query_string=True)
-def get_wfo_name(wfo_id):
+# @app.route('/wfoname/<wfo_id>', methods=["GET"])
+# @cache.cached(timeout=36000, query_string=True)
+# def get_wfo_name(wfo_id):
     
-    if not wfo_id:
-      return ('wfo id is required', 400)
+#     if not wfo_id:
+#       return ('wfo id is required', 400)
   
-    try:
-      result = get_WFO_by_ID(wfo_id)
-      if not result:
-        abort(404)
-      else:
-        return result
-    except Exception as ex:
-      return (str(ex), 500)
+#     try:
+#       result = get_WFO_by_ID(wfo_id)
+#       if not result:
+#         abort(404)
+#       else:
+#         return result
+#     except Exception as ex:
+#       return (str(ex), 500)
     
 
-@app.route('/wfocanonical/<canonical_name>', methods=["GET"])
-def get_wfo_canonical_name(canonical_name):
+# @app.route('/wfocanonical/<canonical_name>', methods=["GET"])
+# def get_wfo_canonical_name(canonical_name):
   
-  if not canonical_name or not canonical_name.strip():
-    return ('wfo id is required', 400)
+#   if not canonical_name or not canonical_name.strip():
+#     return ('wfo id is required', 400)
   
-  try:
-    result = get_WFO_canonical(unquote(canonical_name.strip().replace('+', ' ')))
-    if not result:
-      abort(404)
-    else:
-      return result
-  except Exception as ex:
-      return (str(ex), 500)
+#   try:
+#     result = get_WFO_canonical(unquote(canonical_name.strip().replace('+', ' ')))
+#     if not result:
+#       abort(404)
+#     else:
+#       return result
+#   except Exception as ex:
+#       return (str(ex), 500)
 
 @app.route('/bodatsaextractdate', methods=["GET"])
 def fetch_date():

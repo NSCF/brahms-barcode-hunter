@@ -10,15 +10,26 @@
 
   let searchInput
   let searchText = ''
-  let source
+  let source = 'SANBI'
+  let wfoSearch = false
   let names = []
   let fetching = false
+  let searched = false
   let error = false
   let copyNameOnly = false
 
   let bodatsaextractdate = null
 
   onMount(async _ => {
+
+    // warm up the wfo database, in case it's needed
+    try {
+      fetch(base_url + `namesearch?search_string=wel+mir&source=WFO`)
+    }
+    catch {
+      //do nothing
+    }
+
 
     const response = await fetch(base_url + `bodatsaextractdate`)
       if (response.ok){
@@ -46,6 +57,10 @@
     if (searchText && searchText.trim() && searchText.trim().split(' ').length > 1) {
       error = false
       names = []
+      if (source == 'SANBI') {
+        wfoSearch = false
+      }
+
       fetching = true
       const response = await fetch(base_url + `namesearch?search_string=${searchText}&source=${source}`)
       if (response.ok){
@@ -58,6 +73,7 @@
         })
 
         fetching = false
+        searched = true
       }
       else {
         error = true
@@ -70,8 +86,18 @@
     }
   }
 
+  const handleTextInput = _ => {
+    source = 'SANBI'
+    getNames()
+  }
+
+  const tryWFOSearch = _ => {
+    source = 'WFO'
+    getNames()
+  }
+
   // run it
-  $: searchText, getNames()
+  $: searchText, handleTextInput()
 
   const toastOptions = {
     duration: 1000 
@@ -85,7 +111,7 @@
     ]
 
     if (!copyNameOnly) {
-      values = [...values, name.identifier, name.status, name.acceptedName]
+      values = [...values, name.status, name.acceptedName]
     }
     
     let copyString = values.join('\t').trim()
@@ -100,6 +126,7 @@
     source = "SANBI"
     searchText = ''
     searchInput.value = ''
+    searched = false
   }
 
 </script>
@@ -117,17 +144,20 @@
   {/if}
   <div class="search">
     <div class="fields">
-      <div style="display:flex; justify-content:flex-end;">
+      <div style="display:flex; justify-content:space-between;">
+        <div>
+          Source: {source}
+        </div>
         <div>
           <input type="checkbox" id="names-only" style="width:fit-content;"  bind:checked={copyNameOnly}>
           <label for="names-only">copy name + identifier only</label><br>
         </div>
       </div>
       <div style="position:relative;">
-        <select bind:value={source} on:change={getNames}>
+        <!-- <select bind:value={source} on:change={getNames}>
           <option value="SANBI">SANBI</option>
           <option value="WFO">WFO</option>
-        </select>
+        </select> -->
         <input placeholder="Add partial taxon names here, e.g. 'wel mir', and press enter.. " on:input={debounce} bind:this={searchInput}/>
         <span class="material-symbols-outlined refresh" on:click={clear}>
           refresh
@@ -144,10 +174,17 @@
             <span class="material-symbols-outlined" style="color: gray;" on:click={_ => copyName(name)}>
               content_copy
             </span>
-            {name.fullName}</div>
+            {name.fullName}
+          </div>
           {/each}
+          {#if searched && source != 'WFO'}
+            <button on:click={tryWFOSearch}>Try World Flora Online</button>
+          {/if}
         {:else}
-          <p>No names found</p>
+          {#if searched && source != 'WFO'}
+            <p>No names found</p>
+            <button on:click={tryWFOSearch}>Try World Flora Online</button>
+          {/if}
         {/if}
       </div>
     </div>
@@ -195,7 +232,7 @@
   }
 
   input {
-    width: 400px;
+    width: 500px;
   }
   
   select {
