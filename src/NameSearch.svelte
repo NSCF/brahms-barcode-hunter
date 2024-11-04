@@ -111,7 +111,13 @@
     ]
 
     if (!copyNameOnly) {
-      values = [...values, name.status, name.acceptedName]
+      values = [
+        name.fullName,
+        source,
+        name.identifier,
+        name.status, 
+        name.acceptedName
+      ]
     }
     
     let copyString = values.join('\t').trim()
@@ -181,9 +187,11 @@
             <button on:click={tryWFOSearch}>Try World Flora Online</button>
           {/if}
         {:else}
-          {#if searched && source != 'WFO'}
+          {#if searched}
             <p>No names found</p>
-            <button on:click={tryWFOSearch}>Try World Flora Online</button>
+            {#if source != 'WFO'}
+              <button on:click={tryWFOSearch}>Try World Flora Online</button>
+            {/if}
           {/if}
         {/if}
       </div>

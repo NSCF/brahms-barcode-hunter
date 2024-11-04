@@ -2,7 +2,8 @@
 import os
 import csv
 
-dir = r'C:\Herbarium imaging\NU\data'
+dir = r'D:\NSCF Data WG\Data\Herbaria\Bews Herbarium\Imaging project data capture\Individual spreadsheets'
+
 headers = [
   'section',
   'station',
