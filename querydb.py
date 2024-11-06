@@ -211,9 +211,6 @@ def get_BODATSA_names(search_string):
       "status": row["status"],
       "acceptedName": row['acceptedname'] # this is already empty if the same as fullname
     }
-
-    if mapped['acceptedName'] is None or mapped['acceptedName'] == '':
-      mapped['acceptedName'] = "-"
       
     query_results.append(mapped)
 
@@ -221,11 +218,23 @@ def get_BODATSA_names(search_string):
   sorted_results = sorted(query_results, key=lambda d: d['fullName'])
   return sorted_results
   
-def get_BODATSA_extractdate():
+def get_checklist_date():
   if path.exists('taxa.sqlite'):
     db = dataset.connect('sqlite:///taxa.sqlite')
     if db.has_table('taxa'):
       sql = "select * from meta where tablename = 'taxa' and field = 'extractdate'"
+      result = []
+      for row in db.query(sql):
+        result.append(row)
+      return result
+    return []
+  return []
+
+def get_WFO_date():
+  if path.exists('wfo.sqlite'):
+    db = dataset.connect('sqlite:///wfo.sqlite')
+    if db.has_table('wfo_taxa'):
+      sql = "select * from meta where tablename = 'taxa' and field = 'version' order by value desc limit 1"
       result = []
       for row in db.query(sql):
         result.append(row)

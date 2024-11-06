@@ -10,6 +10,6 @@ import json
 # names = get_WFO_names("care vulp")
 # i = 1
 
-names = get_BODATSA_names("care vulp")
+names = get_BODATSA_names("strel reg")
 json_names = json.dumps(names)
 i = 1

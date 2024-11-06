@@ -5,7 +5,7 @@ from flask_caching import Cache
 from flask_cors import CORS
 from flask_socketio import SocketIO
 from printerInterface import wait_for_print_job
-from querydb import querydb, get_countries, get_provinces, get_families, get_WFO_names, get_BODATSA_names, get_BODATSA_extractdate
+from querydb import querydb, get_countries, get_provinces, get_families, get_WFO_names, get_BODATSA_names, get_checklist_date, get_WFO_date
 
 cache = Cache(config={ 'CACHE_TYPE': 'SimpleCache' })
 app = Flask(__name__, static_url_path='', static_folder='dist')
@@ -117,10 +117,13 @@ def name_search():
 #   except Exception as ex:
 #       return (str(ex), 500)
 
-@app.route('/bodatsaextractdate', methods=["GET"])
+@app.route('/checklistdate', methods=["GET"])
 def fetch_date():
-  return get_BODATSA_extractdate()
+  return get_checklist_date()
 
+@app.route('/wfodate', methods=["GET"])
+def fetch_wfo_date():
+  return get_WFO_date()
 
 @socketio.on('connect')
 def handle_connect():

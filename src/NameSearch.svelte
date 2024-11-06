@@ -11,14 +11,15 @@
   let searchInput
   let searchText = ''
   let source = 'SANBI'
-  let wfoSearch = false
+  let wfoOnly = false
   let names = []
   let fetching = false
   let searched = false
   let error = false
-  let copyNameOnly = false
+  let copyAcceptedNameAndStatus = false
 
-  let bodatsaextractdate = null
+  let checklistdate = null
+  let wfodate = null
 
   onMount(async _ => {
 
@@ -30,19 +31,36 @@
       //do nothing
     }
 
-
-    const response = await fetch(base_url + `bodatsaextractdate`)
+    fetch(base_url + `checklistdate`).then(response => {
       if (response.ok){
-        const data = await response.json()
-        if (data.length) {
-          bodatsaextractdate = data[0].value
-        }
+        response.json().then(data => {
+          if (data.length) {
+            checklistdate = data[0].value
+          }
+        })
       }
       else {
         error = true
         console.error(response.message)
       }
+    })
 
+    fetch(base_url + `wfodate`).then(response => {
+      if (response.ok){
+        response.json().then(data => {
+          if (data.length) {
+            wfodate = data[0].value
+          }
+        })
+      }
+      else {
+        error = true
+        console.error(response.message)
+      }
+    })
+
+
+      
   })
 
   let timer;
@@ -57,20 +75,11 @@
     if (searchText && searchText.trim() && searchText.trim().split(' ').length > 1) {
       error = false
       names = []
-      if (source == 'SANBI') {
-        wfoSearch = false
-      }
 
       fetching = true
       const response = await fetch(base_url + `namesearch?search_string=${searchText}&source=${source}`)
       if (response.ok){
-        let results = await response.json()
-        names = results.map(name => {
-          if (name.fullName == name.acceptedName) {
-            name.acceptedName = '-'
-          }
-          return name
-        })
+        names = await response.json()
 
         fetching = false
         searched = true
@@ -87,7 +96,12 @@
   }
 
   const handleTextInput = _ => {
-    source = 'SANBI'
+    if (wfoOnly) {
+      source = 'WFO'
+    }
+    else {
+      source = 'SANBI'
+    }
     getNames()
   }
 
@@ -98,6 +112,7 @@
 
   // run it
   $: searchText, handleTextInput()
+  $: wfoOnly, handleTextInput()
 
   const toastOptions = {
     duration: 1000 
@@ -110,7 +125,7 @@
       name.identifier
     ]
 
-    if (!copyNameOnly) {
+    if (copyAcceptedNameAndStatus) {
       values = [
         ...values,
         name.status, 
@@ -143,9 +158,14 @@
 
 <main>
   <h2>Taxon name search</h2>
-  {#if bodatsaextractdate}
-  <p class="extractdate">SANBI checklist date: {bodatsaextractdate}</p>
-  {/if}
+  <div class="extractdate">
+    {#if checklistdate}
+      <p style="margin: 0;">SANBI checklist date: {checklistdate}</p>
+    {/if}
+    {#if wfodate}
+      <p style="margin: 0;">WFO version: {wfodate}</p>
+    {/if}
+  </div>
   <div class="search">
     <div class="fields">
       <div style="display:flex; justify-content:space-between;">
@@ -153,8 +173,8 @@
           Source: {source}
         </div>
         <div>
-          <input type="checkbox" id="names-only" style="width:fit-content;"  bind:checked={copyNameOnly}>
-          <label for="names-only">copy name + identifier only</label><br>
+          <input type="checkbox" id="names-only" style="width:fit-content;"  bind:checked={copyAcceptedNameAndStatus}>
+          <label for="names-only">include status and accepted name</label><br>
         </div>
       </div>
       <div style="position:relative;">
@@ -162,11 +182,17 @@
           <option value="SANBI">SANBI</option>
           <option value="WFO">WFO</option>
         </select> -->
-        <input placeholder="Add partial taxon names here, e.g. 'wel mir', and press enter.. " on:input={debounce} bind:this={searchInput}/>
+        <input placeholder="Add partial taxon names here, e.g. 'strel reg', and press enter.. " on:input={debounce} bind:this={searchInput}/>
         <span class="material-symbols-outlined refresh" on:click={clear}>
           refresh
           </span>
         <div>
+      </div>
+      <div style="display:flex; justify-content:flex-end;">
+        <div>
+          <input type="checkbox" id="wfo-only" style="width:fit-content;"  bind:checked={wfoOnly}>
+          <label for="names-only">search WFO only</label><br>
+        </div>
       </div>
         {#if fetching}
           <p>Fetching names...</p>
