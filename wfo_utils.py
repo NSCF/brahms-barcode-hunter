@@ -73,7 +73,7 @@ def get_accepted_name(wfo_record, db):
     for row in results:
       wfo_record = row
 
-  return wfo_record['scientificName']
+  return (wfo_record['scientificName'] + ' ' + wfo_record['scientificNameAuthorship']).strip()
 
 def replace_specialchars(string):
 

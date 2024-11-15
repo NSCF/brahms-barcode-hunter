@@ -3,7 +3,6 @@
 
 import dataset
 import sys, time, re, csv
-from progress.bar import Bar
 from os import path
 
 datafilepath = r'C:\Users\ianic\Downloads'
