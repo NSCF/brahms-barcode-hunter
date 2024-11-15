@@ -77,7 +77,7 @@ def get_accepted_name(wfo_record, db):
 
 def replace_specialchars(string):
 
-  string = string.replace('Č', 'C')                              \
+  string = string.replace('Č', 'C')                 \
     .replace('Ç', 'C')                              \
     .replace('ç', 'c')                              \
     .replace('Ñ', 'N')                              \
@@ -92,8 +92,7 @@ def replace_specialchars(string):
     .replace('ž', 'z')                              \
     .replace('Þ', 'Th')                             \
     .replace('ð', 'd')                              \
-    .replace('ß', 'ss')                             \
-    .replace('œ', 'oe')                            
+    .replace('ß', 'ss')                        
   
   string = re.sub(r'[áàâãäå]+', 'a', string)
   string = re.sub(r'[ÉÈÊË]+', 'E', string)
