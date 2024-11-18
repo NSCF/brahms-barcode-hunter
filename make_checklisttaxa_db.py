@@ -5,11 +5,17 @@ import dataset
 import sys, time, re, csv
 from os import path
 
-datafilepath = r'C:\Users\ianic\Downloads'
-datafile = r'SA-Plant-Checklist-2024-OpenRefine.csv'
-checklistdate = r'2024-03-20' # The ISO 8601 date that the checklist was published
+datafilepath = r'D:\NSCF Data WG\Data\Herbaria\SANBI taxon backbone'
+datafile = r'FSAonly_Extract20241115.csv'
+checklistdate = r'2024-11-15' # The ISO 8601 date that the checklist was published
 
-dbfields = ['guid', 'fullname', 'status', 'acceptedname']
+# mapping of db fields to dataset fields, case sensitive
+dbfields = {
+  'guid': 'Record  Guid', 
+  'fullname': 'CalcFullName', 
+  'status': 'TaxStatus', 
+  'acceptedname': 'CalcAcceptedName'
+}
 
 print('creating taxon table')
 db = dataset.connect('sqlite:///taxa.sqlite')
@@ -17,7 +23,7 @@ table = db['taxa']
 table.drop()
 table = db['taxa'] #recreate
 
-for field in dbfields:
+for field in dbfields.keys():
   table.create_column(field, db.types.string)
 table.create_index(['fullname'])
 
@@ -29,11 +35,13 @@ rowcount = 0
 with open(path.join(datafilepath, datafile), newline='', encoding='utf8') as csvfile:
   reader = csv.DictReader(csvfile)
   for row in reader:
+
+    # I'm sure there's a smarter way to destructure the row than this...
     data = {
-      "guid": row["RecordGUID"],
-      "fullname": re.sub(r'\s+', ' ', row["FullName"]).strip(),
-      "status": row["TaxStatus"],
-      "acceptedname": re.sub(r'\s+', ' ', row["AcceptedName"]).strip()
+      "guid": row[dbfields['guid']],
+      "fullname": re.sub(r'\s+', ' ', row[dbfields['fullname']]).strip(),
+      "status": row[dbfields['status']],
+      "acceptedname": re.sub(r'\s+', ' ', row[dbfields['acceptedname']]).strip()
     }
 
     table.insert(data)

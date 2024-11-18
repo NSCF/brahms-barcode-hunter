@@ -7,9 +7,9 @@ import json
 # countries = get_provinces()
 # i = 1
 
-# names = get_WFO_names("care vulp")
+names = get_WFO_names("care vulp")
 # i = 1
 
-names = get_BODATSA_names("strel reg")
-json_names = json.dumps(names)
+# names = get_BODATSA_names("strel reg")
+# json_names = json.dumps(names)
 i = 1
