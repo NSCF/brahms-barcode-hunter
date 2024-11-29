@@ -1,18 +1,8 @@
-from os import walk
+import dataset
 
-f = r"F:\Herbarium imaging\NU\Main Collection"
-g = r"G:\Herbarium imaging\NU\Main Collection"
+try:
+    db = dataset.connect('sqlite:///asdf.sqlite', ensure_schema=False)
+except Exception as ex:
+    raise ex
 
-f_files = []
-for (dirpath, dirnames, filenames) in walk(f):
-    f_files.extend(filenames)
-
-g_files = []
-for (dirpath, dirnames, filenames) in walk(g):
-    g_files.extend(filenames)
-
-f_set = set(f_files)
-g_set = set(g_files)
-
-both = f_set.intersection(g_set)
-print(len(both), 'files in both directories')
+pass

@@ -2,6 +2,17 @@ from os import path
 import re
 import dataset, requests
 
+def getDB(dbname, table):
+  if path.exists(dbname):
+    db = dataset.connect('sqlite:///' + dbname)
+    if db.has_table(table):
+      return db
+    else:
+      raise Exception('database table ' + table + ' does not exist')
+  else:
+    raise Exception('database file ' + dbname + ' does not exist')
+
+
 def querydb(searchparams):
 
   db = dataset.connect('sqlite:///brahms.sqlite')
@@ -74,7 +85,9 @@ def querydb(searchparams):
   return results
 
 def get_countries():
+  
   db = dataset.connect('sqlite:///brahms.sqlite')
+  
   sql = 'select distinct country from specimens'
   qry = db.query(sql)
   results = []
@@ -84,7 +97,9 @@ def get_countries():
   return results
 
 def get_provinces():
+  
   db = dataset.connect('sqlite:///brahms.sqlite')
+  
   sql = 'select distinct majoradmin from specimens where country = \'South Africa\''
   qry = db.query(sql)
   results = []
@@ -94,7 +109,9 @@ def get_provinces():
   return results
 
 def get_families():
+  
   db = dataset.connect('sqlite:///brahms.sqlite')
+  
   sql = 'select distinct familyname from specimens'
   qry = db.query(sql)
   results = []
