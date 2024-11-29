@@ -1,6 +1,7 @@
 from os import path
 import re
 import dataset, requests
+from wfo_utils import map_record, get_parent_author, get_accepted_name
 
 def getDB(dbname, table):
   if path.exists(dbname):
@@ -120,63 +121,93 @@ def get_families():
   db.close()
   return results
 
+def get_WFO_by_ID(wfo_id):
+
+  if wfo_id and wfo_id.strip() and re.match("wfo\-\d{10}", wfo_id):
+
+    db = dataset.connect('sqlite:///wfo.sqlite')
+    sql = "select * from wfo_taxa where taxonID = :wfo_id"
+    results = []
+    for row in db.query(sql, wfo_id = wfo_id):
+
+      if row['scientificNameAuthorship'] is None:
+        row['scientificNameAuthorship'] = get_parent_author(row, db)
+
+      mapped = map_record(row)
+      mapped['acceptedName'] = get_accepted_name(row, db)
+        
+      results.append(mapped)
+
+    db.close()
+
+    if results:
+      return results[0] # there should only be one
+    else:
+      return None
+    
+  else:
+    raise Exception('invalid wfo_id')
+
+# TODO move back to the WFO API if they fix the issue with searches with multiple name parts https://github.com/rogerhyam/wfo-plant-list/issues/11
 def get_WFO_names(search_string):
   if search_string and search_string.strip():
 
-    search_string = re.sub(r'\s+', '* ', search_string)
+    db = dataset.connect('sqlite:///wfo.sqlite')
 
-    url = 'https://list.worldfloraonline.org/gql.php'
-    headers = {
-      'Content-Type': 'application/json',
-    }
+    search_string = re.sub(r'\s+', '% ', search_string + ' ').strip() # adding the space on the end so we get the extra %
+    sql = "select * from wfo_taxa where scientificName like :search and taxonomicStatus != \'deprecated\'"
+    query_results = []
+    for row in db.query(sql, search = search_string):
 
-    query = '''
-      query GetTaxa($searchString: String!) {
-        taxonNameSuggestion(termsString: $searchString) {
-          fullNameStringPlain,
-          id,
-          role,
-          currentPreferredUsage {
-            hasName {
-              fullNameStringPlain,
-              authorsString
-            }
-          }
-        }
-      }
-    '''
+      if row['scientificNameAuthorship'] is None:
+        row['scientificNameAuthorship'] = get_parent_author(row, db)
 
-    data = {'query': query, 'variables': {'searchString': search_string}}
-    response = requests.post(url, json=data, headers=headers)
-    if response.status_code == 200:
-        results = response.json()
-        data = results["data"]["taxonNameSuggestion"]
-        #we need to add the source
-        all_mapped = []
-        for record in data:
-          mapped = {
-            "fullName": record["fullNameStringPlain"],
-            "source" : "WFO",
-            "identifier": record["id"],
-            "status": record["role"],
-            "acceptedName": '-'
-          }
+      # if author is still None then it means there are multiple taxa with the parent name, 
+      # and we can't actually be sure which infraspecific taxon we're dealing with,
+      # so we don't want to return it as an option
+      if not row['scientificNameAuthorship']:
+        continue
 
-          if record["currentPreferredUsage"] and record["currentPreferredUsage"]["hasName"] and record["currentPreferredUsage"]["hasName"]["fullNameStringPlain"]:
-            accepted_name = record["currentPreferredUsage"]["hasName"]["fullNameStringPlain"]
-            if mapped["fullName"] != accepted_name:
-              mapped["acceptedName"] = accepted_name
+      mapped = map_record(row)
+      mapped['acceptedName'] = get_accepted_name(row, db)
 
-          all_mapped.append(mapped)
+      query_results.append(mapped)
 
-        sorted_mapped = sorted(all_mapped, key=lambda d: d['fullName'])
-        return sorted_mapped
-    
-    else:
-        return (response.text, response.status_code)
+    sorted_results = sorted(query_results, key=lambda d: d['fullName'])
+    db.close()
+
+    return sorted_results
+  
   else:
     raise Exception('search string is required')
-  
+
+def get_WFO_canonical(canonical_name):
+
+  if canonical_name and canonical_name.strip():
+
+    db = dataset.connect('sqlite:///wfo.sqlite')
+    sql = "select * from wfo_taxa where scientificName like :canonical"
+    results = []
+    for row in db.query(sql, canonical = canonical_name.strip()+'%'):
+
+      if row['scientificNameAuthorship'] is None:
+        row['scientificNameAuthorship'] = get_parent_author(row, db)
+
+      mapped = map_record(row)
+      mapped['acceptedName'] = get_accepted_name(row, db)
+        
+      results.append(mapped)
+
+    db.close()
+
+    if results:
+      return results
+    else:
+      return None
+    
+  else:
+    raise Exception('invalid canonical name')
+
 def get_BODATSA_names(search_string):
   
   db = dataset.connect('sqlite:///taxa.sqlite')
@@ -185,6 +216,11 @@ def get_BODATSA_names(search_string):
   sql = "select * from taxa where fullname like :search"
   query_results = []
   for row in db.query(sql, search = search_string):
+
+    #remove auct. names
+    if 'auct.' in row['fullname']: 
+      continue;
+      
     mapped = {
       "fullName": row["fullname"],
       "source" : "SANBI",
@@ -192,20 +228,30 @@ def get_BODATSA_names(search_string):
       "status": row["status"],
       "acceptedName": row['acceptedname'] # this is already empty if the same as fullname
     }
-
-    if mapped['acceptedName'] is None or mapped['acceptedName'] == '':
-      mapped['acceptedName'] = "-"
       
     query_results.append(mapped)
 
+  db.close()
   sorted_results = sorted(query_results, key=lambda d: d['fullName'])
   return sorted_results
   
-def get_BODATSA_extractdate():
+def get_checklist_date():
   if path.exists('taxa.sqlite'):
     db = dataset.connect('sqlite:///taxa.sqlite')
     if db.has_table('taxa'):
       sql = "select * from meta where tablename = 'taxa' and field = 'extractdate'"
+      result = []
+      for row in db.query(sql):
+        result.append(row)
+      return result
+    return []
+  return []
+
+def get_WFO_date():
+  if path.exists('wfo.sqlite'):
+    db = dataset.connect('sqlite:///wfo.sqlite')
+    if db.has_table('wfo_taxa'):
+      sql = "select * from meta where tablename = 'taxa' and field = 'version' order by value desc limit 1"
       result = []
       for row in db.query(sql):
         result.append(row)

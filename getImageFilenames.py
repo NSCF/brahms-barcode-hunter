@@ -6,7 +6,7 @@ import re
 import csv
 import os
 
-dir = r'D:\Herbarium imaging\NU\JPEG'
+dir = r'T:\Herbarium imaging\NU\JPEG'
 drive = "BEWS01"
 file_ext = '.jpg'
 

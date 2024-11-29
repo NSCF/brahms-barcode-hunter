@@ -10,27 +10,57 @@
 
   let searchInput
   let searchText = ''
-  let source
+  let source = 'SANBI'
+  let wfoOnly = false
   let names = []
   let fetching = false
+  let searched = false
   let error = false
+  let copyAcceptedNameAndStatus = false
 
-  let bodatsaextractdate = null
+  let checklistdate = null
+  let wfodate = null
 
   onMount(async _ => {
 
-    const response = await fetch(base_url + `bodatsaextractdate`)
+    // warm up the wfo database, in case it's needed
+    try {
+      fetch(base_url + `namesearch?search_string=wel+mir&source=WFO`)
+    }
+    catch {
+      //do nothing
+    }
+
+    fetch(base_url + `checklistdate`).then(response => {
       if (response.ok){
-        const data = await response.json()
-        if (data.length) {
-          bodatsaextractdate = data[0].value
-        }
+        response.json().then(data => {
+          if (data.length) {
+            checklistdate = data[0].value
+          }
+        })
       }
       else {
         error = true
         console.error(response.message)
       }
+    })
 
+    fetch(base_url + `wfodate`).then(response => {
+      if (response.ok){
+        response.json().then(data => {
+          if (data.length) {
+            wfodate = data[0].value
+          }
+        })
+      }
+      else {
+        error = true
+        console.error(response.message)
+      }
+    })
+
+
+      
   })
 
   let timer;
@@ -45,12 +75,14 @@
     if (searchText && searchText.trim() && searchText.trim().split(' ').length > 1) {
       error = false
       names = []
+
       fetching = true
       const response = await fetch(base_url + `namesearch?search_string=${searchText}&source=${source}`)
       if (response.ok){
         names = await response.json()
-        console.log(names[0])
+
         fetching = false
+        searched = true
       }
       else {
         error = true
@@ -63,31 +95,57 @@
     }
   }
 
+  const handleTextInput = _ => {
+    if (wfoOnly) {
+      source = 'WFO'
+    }
+    else {
+      source = 'SANBI'
+    }
+    getNames()
+  }
+
+  const tryWFOSearch = _ => {
+    source = 'WFO'
+    getNames()
+  }
+
   // run it
-  $: searchText, getNames()
+  $: searchText, handleTextInput()
+  $: wfoOnly, handleTextInput()
 
   const toastOptions = {
     duration: 1000 
   }
 
   const copyName = name => {
+    
     let values = [
       name.fullName,
-      name.source,
-      name.identifier,
-      name.status,
-      name.acceptedName
+      name.identifier
     ]
+
+    if (copyAcceptedNameAndStatus) {
+      values = [
+        ...values,
+        name.status, 
+        name.acceptedName
+      ]
+    }
+    
     let copyString = values.join('\t').trim()
+
     clipboard.write(copyString).then(_ => { 
       toast.push('Name copied')
     });
+    
   }
 
   const clear = _ => {
     source = "SANBI"
     searchText = ''
     searchInput.value = ''
+    searched = false
   }
 
 </script>
@@ -100,20 +158,42 @@
 
 <main>
   <h2>Taxon name search</h2>
-  {#if bodatsaextractdate}
-  <p class="extractdate">SANBI checklist date: {bodatsaextractdate}</p>
-  {/if}
+  <div class="extractdate">
+    {#if checklistdate}
+      <p style="margin: 0;">SANBI checklist date: {checklistdate}</p>
+    {/if}
+    {#if wfodate}
+      <p style="margin: 0;">WFO version: {wfodate}</p>
+    {/if}
+  </div>
   <div class="search">
     <div class="fields">
-      <select bind:value={source} on:change={getNames}>
-        <option value="SANBI">SANBI</option>
-        <option value="WFO">WFO</option>
-      </select>
-      <input placeholder="Add partial taxon names here, e.g. 'wel mir', and press enter.. " on:input={debounce} bind:this={searchInput}/>
-      <span class="material-symbols-outlined refresh" on:click={clear}>
-        refresh
-        </span>
-      <div>
+      <div style="display:flex; justify-content:space-between;">
+        <div>
+          Source: {source}
+        </div>
+        <div>
+          <input type="checkbox" id="names-only" style="width:fit-content;"  bind:checked={copyAcceptedNameAndStatus}>
+          <label for="names-only">include status and accepted name</label><br>
+        </div>
+      </div>
+      <div style="position:relative;">
+        <!-- <select bind:value={source} on:change={getNames}>
+          <option value="SANBI">SANBI</option>
+          <option value="WFO">WFO</option>
+        </select> -->
+        <input placeholder="Add partial taxon names here, e.g. 'strel reg', and press enter.. " on:input={debounce} bind:this={searchInput}/>
+        <span class="material-symbols-outlined refresh" on:click={clear}>
+          refresh
+          </span>
+        <div>
+      </div>
+      <div style="display:flex; justify-content:flex-end;">
+        <div>
+          <input type="checkbox" id="wfo-only" style="width:fit-content;"  bind:checked={wfoOnly}>
+          <label for="names-only">search WFO only</label><br>
+        </div>
+      </div>
         {#if fetching}
           <p>Fetching names...</p>
         {:else if error}
@@ -121,13 +201,22 @@
         {:else if names.length}
           {#each names as name}
           <div class="nameitem">
-            <span class="material-symbols-outlined" style="color: gray;" on:click={copyName(name)}>
+            <span class="material-symbols-outlined" style="color: gray;" on:click={_ => copyName(name)}>
               content_copy
             </span>
-            {name.fullName}</div>
+            {name.fullName}
+          </div>
           {/each}
+          {#if searched && source != 'WFO'}
+            <button on:click={tryWFOSearch}>Try World Flora Online</button>
+          {/if}
         {:else}
-          <p>No names found</p>
+          {#if searched}
+            <p>No names found</p>
+            {#if source != 'WFO'}
+              <button on:click={tryWFOSearch}>Try World Flora Online</button>
+            {/if}
+          {/if}
         {/if}
       </div>
     </div>
@@ -175,7 +264,7 @@
   }
 
   input {
-    width: 400px;
+    width: 500px;
   }
   
   select {
